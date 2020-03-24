@@ -1,0 +1,33 @@
+# Don't track content of these folders
+node1/datadir/geth/
+node1/datadir/history
+node2/datadir/geth/
+node2/datadir/history
+node3/datadir/geth/
+node3/datadir/history
+node4/datadir/geth/
+node4/datadir/history
+
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+*.so
+
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
