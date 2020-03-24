@@ -1,14 +1,15 @@
-package jwt
+package middleware
 
 import (
 	"errors"
 	"fmt"
 	// "github.com/valyala/fasthttp"
 	"github.com/qiangxue/fasthttp-routing"
+  "github.com/binhnt-teko/test_loyalty/src/app/config"
 )
 
 func CheckTokenMiddleware(c *routing.Context) error {
-	if cfg.Jwt.Enable {
+	if config.Configuration.Jwt.Enable {
 		fasthttpJwtCookie := c.Request.Header.Cookie("fasthttp_jwt")
 
 		if len(fasthttpJwtCookie) == 0 {
@@ -36,15 +37,16 @@ func JWTMiddleware() routing.Handler {
 	return func(c *routing.Context) error {
 		for _, middleware_item := range MiddlewareList {
 			if err := middleware_item(c); err != nil {
-				res := &ApiResponse{
+				res := &config.ApiResponse{
 						Rescode: 99,
 						Resdecr: "Please login",
 						Resdata: err.Error(),
 				}
-				fmt.Fprintf(c,res.toJson())
+				fmt.Fprintf(c,res.ToJson())
 				return nil
 			}
 		}
 		c.Next()
+		return nil
 	}
 }

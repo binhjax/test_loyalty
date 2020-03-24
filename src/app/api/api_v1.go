@@ -3,90 +3,26 @@ package api
 import (
 	"fmt"
 	"github.com/qiangxue/fasthttp-routing"
-	"github.com/valyala/fasthttp"
+	// "github.com/valyala/fasthttp"
+  "github.com/binhnt-teko/test_loyalty/src/app/config"
   "strings"
   // "github.com/go-redis/redis"
-  "encoding/json"
+  // "encoding/json"
 )
 type ApiV1 struct {}
 
-type ApiResponse struct  {
-	  Rescode int  `json:"rescode"`
-		Resdecr string  `json:"resdecr"`
-		Resdata interface{}  `json:"resdata"`
-}
-
-func (res *ApiResponse) toJson() string {
-	  b, err := json.Marshal(res)
-    if err != nil {
-        //fmt.Println("Json parse error: : ",err)
-        return ""
-    }
-		//fmt.Println("Json parse ok: : ",string(b))
-    return string(b)
-}
-
 func Response(c  *routing.Context, code int, desr string, data interface{} ) error {
-		res := &ApiResponse{
+		res := &config.ApiResponse{
 				Rescode: code,
 				Resdecr: desr,
 				Resdata: data,
 		}
-		fmt.Fprintf(c,res.toJson())
+		fmt.Fprintf(c,res.ToJson())
 		return nil
 }
 
-
-////////////// Login function ///////////
-func (api ApiV1) login_get(c  *routing.Context) error {
-		fmt.Println("GET: API Access Login")
-		//fmt.Fprintf(c,"Please POST: username and password ")
-		return Response(c,99,"Please use POST method",nil)
-}
-
-// JSON Authentication
-func (api ApiV1)  login(c  *routing.Context) error {
-	fmt.Println("API Access Login. ")
-
-	username := string(c.FormValue("username"))
-	password := string(c.FormValue("password"))
-
-	fmt.Println("Username:  " + username  + ", " + password)
-
-	if cfg.JwtVerifyUsername(username,password) {
-			fmt.Println("Start JwtVerifyUsername")
-			qUser := []byte(username)
-			qPasswd := []byte(password)
-
-			fasthttpJwtCookie := c.Request.Header.Cookie("fasthttp_jwt")
-
-			// for example, server receive token string in request header.
-			if len(fasthttpJwtCookie) == 0 {
-				fmt.Println("Start creating token ")
-
-				tokenString, expireAt := CreateToken(qUser, qPasswd)
-				//fmt.Println("Get cookied ")
-				// Set cookie for domain
-				cookie := fasthttp.AcquireCookie()
-				//fmt.Println("End get cookie ")
-
-				cookie.SetKey("fasthttp_jwt")
-
-				cookie.SetValue(tokenString)
-				cookie.SetExpire(expireAt)
-				c.Response.Header.SetCookie(cookie)
-
-				fmt.Println("End creating token ")
-				return Response(c,0,"New Jwt token successfully",nil)
-			}
-			return Response(c,98,"Existed JWT token, no need recreate",nil)
-	}
-	return Response(c,99,"Username or password failed",nil)
-}
-
-
 /***************** Cash credit function  ************/
- func (api ApiV1) cash_credit(c *routing.Context) error {
+ func (api ApiV1) Cash_credit(c *routing.Context) error {
      address := c.Param("address")
      amount := c.Param("amount")
      traceid := c.Param("traceid")
@@ -118,7 +54,7 @@ func (api ApiV1)  login(c  *routing.Context) error {
  }
 
  // call transfer token
- func (api ApiV1) cash_debit(c *routing.Context) error {
+ func (api ApiV1) Cash_debit(c *routing.Context) error {
      address := c.Param("address")
      amount := c.Param("amount")
      traceid := c.Param("traceid")
@@ -142,7 +78,7 @@ func (api ApiV1)  login(c  *routing.Context) error {
  }
 
  // call transfer token
- func (api ApiV1) cash_transfer(c *routing.Context) error {
+ func (api ApiV1) Cash_transfer(c *routing.Context) error {
      from := c.Param("from")
      to := c.Param("to")
      amount := c.Param("amount")
@@ -171,10 +107,8 @@ func (api ApiV1)  login(c  *routing.Context) error {
 		 return nil
  }
 
-
-
 ///// Balance function ///////////
- func (api ApiV1) balance(c *routing.Context) error {
+ func (api ApiV1) Balance(c *routing.Context) error {
    address := c.Param("address")
 
    if address == "" {
@@ -192,39 +126,39 @@ func (api ApiV1)  login(c  *routing.Context) error {
 		return nil
  }
  // call transfer token
- func (api ApiV1) balance_all(c *routing.Context) error {
+ func (api ApiV1) Balance_all(c *routing.Context) error {
 		 fmt.Fprintf(c,"balance_all ")
      // fmt.Fprintf(c,"transaction: penđing")
 		 return nil
  }
 
  //////// Accunt functions //////////
- func (api ApiV1) account_new(c *routing.Context) error {
+ func (api ApiV1) Account_new(c *routing.Context) error {
    fmt.Println("account_new: start")
-	 res := &ApiResponse{
+	 res := &config.ApiResponse{
 			 Rescode: 0,
 			 Resdecr: "successfully create new account",
 			 Resdata: nil,
 	 }
-	 fmt.Fprintf(c,res.toJson())
+	 fmt.Fprintf(c,res.ToJson())
 	 return nil
  }
- func (api ApiV1) account_total(c *routing.Context) error {
+ func (api ApiV1) Account_total(c *routing.Context) error {
    fmt.Fprintf(c,"account_total: ")
 	 return nil
  }
 
- func (api ApiV1) account_list_active(c *routing.Context) error  {
+ func (api ApiV1) Account_list_active(c *routing.Context) error  {
     fmt.Fprintf(c,"account_list_active: ")
 		return nil
  }
 
- func (api ApiV1) account_list_inactive(c *routing.Context) error  {
+ func (api ApiV1) Account_list_inactive(c *routing.Context) error  {
    fmt.Fprintf(c,"account_list_inactive: ")
 	 return nil
  }
 
- func (api ApiV1) account_lock(c *routing.Context) error {
+ func (api ApiV1) Account_lock(c *routing.Context) error {
     fmt.Fprintf(c,"account_list_inactive: ")
     address := c.Param("address")
     traceid := c.Param("traceid")
@@ -237,7 +171,7 @@ func (api ApiV1)  login(c  *routing.Context) error {
     fmt.Fprintf(c,"account_lock: %v %s %v",address,", traceid: ",traceid)
 		return nil
  }
- func (api ApiV1) account_status(c *routing.Context) error {
+ func (api ApiV1) Account_status(c *routing.Context) error {
      fmt.Fprintf(c,"account_status: ")
      address := c.Param("address")
      if address == "" {
@@ -250,7 +184,7 @@ func (api ApiV1)  login(c  *routing.Context) error {
 
 
  ///// Transaction functions
- func (api ApiV1) transaction(c *routing.Context) error {
+ func (api ApiV1) Transaction(c *routing.Context) error {
    txhash := c.Param("txhash")
 
    if txhash == "" {
@@ -262,7 +196,7 @@ func (api ApiV1)  login(c  *routing.Context) error {
 	 return nil
  }
 
- func (api ApiV1) transaction_list(c *routing.Context) error  {
+ func (api ApiV1) Transaction_list(c *routing.Context) error  {
     account := c.Param("account")
     fromdate := c.Param("fromdate")
     todate := c.Param("todate")
@@ -273,9 +207,9 @@ func (api ApiV1)  login(c  *routing.Context) error {
    }
    account = strings.TrimPrefix(account,"0x")
    fmt.Fprintf(c,"transaction_list: %v,%v,%v",account,fromdate,todate)
-return nil
+	 return nil
  }
- func (api ApiV1) transaction_lock(c *routing.Context) error {
+ func (api ApiV1) Transaction_lock(c *routing.Context) error {
    account := c.Param("account")
    fromdate := c.Param("fromdate")
    todate := c.Param("todate")

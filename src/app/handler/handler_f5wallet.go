@@ -15,7 +15,7 @@ import (
   "github.com/ethereum/go-ethereum/accounts/abi/bind"
   "github.com/jinzhu/gorm"
   "encoding/hex"
-  "test_eth/contracts/f5coin"
+  "github.com/binhnt-teko/test_loyalty/src/app/contracts"
   "sync"
   "math"
   "strconv"

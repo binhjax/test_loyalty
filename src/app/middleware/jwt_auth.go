@@ -1,9 +1,11 @@
-package jwt
+package middleware
 
 import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/savsgio/go-logger"
+  "github.com/binhnt-teko/test_loyalty/src/app/config"
 	"time"
+  // "github.com/binhnt-teko/test_loyalty/src/app"
 )
 
 type UserCredential struct {
@@ -16,7 +18,7 @@ func CreateToken(username []byte, password []byte) (string, time.Time) {
 
 	logger.Debugf("Create new token for user %s", username)
 
-	JWTSignKey := cfg.Jwt.Signkey
+	JWTSignKey := config.Configuration.Jwt.Signkey
 	expireAt := time.Now().Add(1 * time.Minute)
 
 	// Embed User information to `token`
@@ -48,7 +50,7 @@ func JWTValidate(requestToken string) (*jwt.Token, *UserCredential, error) {
 	*/
 
 	// In another way, you can decode token to your struct, which needs to satisfy `jwt.StandardClaims`
-	JWTSignKey :=  cfg.Jwt.Signkey
+	JWTSignKey :=  config.Configuration.Jwt.Signkey
 	user := &UserCredential{}
 	token, err := jwt.ParseWithClaims(requestToken, user, func(token *jwt.Token) (interface{}, error) {
 		return JWTSignKey, nil
