@@ -35,7 +35,7 @@ esac
 --port $P2PPORT --rpcport $RPCPORT \
 --datadir $NODENAME/datadir \
 --rpc --rpcaddr 0.0.0.0   \
---rpcapi 'personal,db,eth,net,web3,txpool,miner,network,debug' \
+--rpcapi 'personal,db,eth,net,web3,txpool,miner,network,debug,admin' \
 --networkid 1112 \
 --gasprice 1000  \
 --targetgaslimit 90000000000000 \

@@ -1,0 +1,39 @@
+version: "1.0"
+released: "2019-01-01T00:00:00Z"
+update: true
+jwt:
+  enable: true
+  signkey: TestForFasthttpWithJWT
+  expiredAt: 5
+  loadAccount: true
+  accountFile: ../../config/jwt_account.yml
+channel:
+  transferqueue: 100
+  logqueue: 100
+webserver:
+  port: "8080"
+  tls: false
+  certificateFile: webCert.pem
+  keyFile: webKey.key
+  maxrpc: 10
+  maxlistenrpc: 1
+  routingMode: 1
+  nonceMode: 1
+keys:
+  loadKey: true
+  keystore: ../../keystore
+  password: "123456"
+networks:
+- name: host1
+  http: 127.0.0.1:8501
+  websocket: 127.0.0.1:8541
+  local: 127.0.0.1
+- name: host2
+  http: 127.0.0.1:8502
+  websocket: 127.0.0.1:8542
+  local: 127.0.0.1
+redis:
+  maxconn: 100
+  host: localhost:6379
+  password: ""
+  db: 0
