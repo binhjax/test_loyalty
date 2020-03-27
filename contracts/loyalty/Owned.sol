@@ -1,15 +1,14 @@
 /*
     @author: DuHD
     @version: 1.0
-    @date: 09/04/2019
+    @date: 25/03/2020
+    @project LOYALTY
 */
 
-pragma solidity ^0.5.7;
+pragma solidity ^0.6.4;
 
 contract Owned {
     address owner;
-    mapping(address => bool)  internal MemberApi;
-    address[] internal memberApiIdx;
 
     constructor() public{
         owner = msg.sender;
@@ -24,22 +23,7 @@ contract Owned {
         return owner;
     }
 
-    function changeOwner(address _newOwner) onlyMember public {
+    function changeOwner(address _newOwner) onlyOwner public {
         owner = _newOwner;
-    }
-
-    function registerMemberApi(address _newMember) onlyMember public {
-        MemberApi[_newMember] = true;
-        memberApiIdx.push(_newMember);
-    }
-
-    function getMemberApiIdxLenght() view public returns (int16)
-    {
-        return int16(memberApiIdx.length);
-    }
-
-    modifier onlyMember() {
-        require(MemberApi[msg.sender], 'CHI CAC ACC ETH DA DANG KY MOI GOI DUOC HAM');
-        _;
     }
 }

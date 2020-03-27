@@ -1,30 +1,16 @@
-package main
+package admin
 
 import (
-	"os"
-	// "strings"
+	// "os"
 	"context"
 	// "log"
 	"github.com/ethereum/go-ethereum/rpc"
 	// "github.com/ethereum/go-ethereum/p2p"
 	"fmt"
 	"strconv"
-	// "test_eth/test2/utils"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	// "github.com/ethereum/go-ethereum/internal/ethapi/api"
-	// "github.com/ethereum/go-ethereum/core/rawdb"
-	// "github.com/ethereum/go-ethereum/core/types"
-	// "github.com/ethereum/go-ethereum/core/vm"
-	// "github.com/ethereum/go-ethereum/crypto"
-	// "github.com/ethereum/go-ethereum/log"
-	// "github.com/ethereum/go-ethereum/p2p"
-	// "github.com/ethereum/go-ethereum/params"
-	// "github.com/ethereum/go-ethereum/rlp"
-	// "github.com/ethereum/go-ethereum/rpc"
-
 )
-
 
 type RPCTransaction struct {
 	BlockHash        common.Hash     `json:"blockHash"`
@@ -43,22 +29,14 @@ type RPCTransaction struct {
 	S                *hexutil.Big    `json:"s"`
 }
 
-
-func main(){
-		if len(os.Args) != 2 {
-			 fmt.Println("Please use syntax: go run txpool.go  server ")
-			 return
-		}
-	  server := os.Args[1]
-		ctx := context.Background()
-
+func GetPool(server string) error {
+	  ctx := context.Background()
 
 		client, err := rpc.DialContext(ctx, server)
 		if err != nil {
 			fmt.Println("Unable to connect to network:%v\n", err)
-			return
+			return err
 		}
-
 		method := "txpool_content"
 		var result map[string]map[string]map[string][]*RPCTransaction
 		client.CallContext(ctx, &result, method)
@@ -85,12 +63,5 @@ func main(){
 				}
 			}
 		}
-
-		// method := "txpool_inspect"
-		// var result map[string]map[string]map[string][]string
-		// client.CallContext(ctx, &result, method)
-		// fmt.Println("Result:",result)
-		// for key, value := range result {
-		// 	fmt.Println("Key:", key, "Value:", value)
-		// }
+		return nil
 }

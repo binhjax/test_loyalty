@@ -31,11 +31,11 @@ case "$NODENAME" in
     ;;
 esac
 
-./bin/geth \
+bin/geth \
 --port $P2PPORT --rpcport $RPCPORT \
 --datadir $NODENAME/datadir \
 --rpc --rpcaddr 0.0.0.0   \
---rpcapi 'personal,db,eth,net,web3,txpool,miner,network,debug' \
+--rpcapi 'personal,db,eth,net,web3,txpool,miner,network,debug,admin' \
 --networkid 1112 \
 --gasprice 1  \
 --targetgaslimit 90000000000000 \
@@ -51,6 +51,8 @@ esac
 --verbosity 5 \
 --nodiscover \
 --allow-insecure-unlock \
+--vmdebug \
+--debug  \
 console
 # 2> geth.log &
 

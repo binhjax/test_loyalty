@@ -1,91 +1,70 @@
 **********************************************************************************************
-# Deploy F5 Contract
+# **************  API List  ***************
 
-## 0. Config
-File config thay doi. Please update new
+## 0. Authentication
+  + Endpoint: /auth/login
+  + Method: POST
+  + Input:
+  {
+    "username":"binhnt",
+    "password":"123456"
+    }
+  + Output:
+  {
+    "rescode": 0,
+    "resdecr": "New Jwt token successfully",
+    "resdata": {
+      "expireAt": "2020-03-25 15:49:24.889251 +0700 +07 m=+1082.684709660",
+      "fasthttp_jwt": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTEyNjE2NH0.dzBB27zalr7ybyunZaCdTArlh2TwdiAifVrtidyjicTjorBtrkhC5Cd-AdBRv1dOufSlpWZYpsq-WvzAyq0xxA"
+    }
+  }
 
-## 1. Deploy contract & Test with manual
-go run deploy_f5wallet.go
- go run f5wallet_manual.go
+## 1. Admin  
+  ### 1.1 Network
+    + Connect peers
+    + Endpoint: /api/admin/network/addpeers
+    + Method: GET
+    {"rescode":0,"resdecr":"Add peers successfully","resdata":null}
 
-## 2. Run webserver, BockEvebt listen, ContractEvent Listen
-go run fast_web_server.go
-go run block_subscribe.go
-go run event_log.go
+  ### 1.2. Account
+    + From store
+    + From file
+    + Save to file
+    + List token
+  ### 1.3. Wallet
+    + Load
+    + List
+    + New
+    + Save
+    + Fillgas
+    + Balance
+    + Send Eth between account
 
-## 3. List of Api
-#### **************  ETH Account ***************
-##### 1. Create new ETH account
-http://http://localhost:8080/api/v2/wallet/new_account
+  ### 1.3. Contract
+    + Deploy Contract
+    + Initlization Contract
+    ##### 1. Register EthAccount
+    http://localhost:8080/api/v2/wallet/register
+## 2. API v1
 
-##### 2. View list Eth Account in system
-http://localhost:8080/api/v2/wallet/accounts
+### 2.1 Wallet
+    ####2.1.1. Create Wallet
+    http://localhost:8080/api/v2/wallet/create/vi03/1
 
-##### 3. View Balance of Eth Account
-http://localhost:8080/api/v2/wallet/eth_balance/59f5545079762e130efaf873e7d28b2756fbc4b6
+    ##### 2.1.3. Set Wallet state
+    http://localhost:8080/api/v2/wallet/set_state/vi03/1
 
-##### 2. View list Eth Account auto fill gas
-http://localhost:8080/api/v2/wallet/autofill 
+    ##### 2.1.4. View wallet balance
+    http://localhost:8080/api/v2/wallet/balance/vi03
+### 2.2 Transactions  
+  ##### 2.2.1. Credit
+  http://localhost:8080/api/v2/wallet/deposit/vi03/vi03/1000
 
-#### **************  Contract API ***************
-##### 1. Register EthAccount
-http://localhost:8080/api/v2/wallet/register
+  ##### 2.2.2. Debit
+  http://localhost:8080/api/v2/wallet/withdraw/vi03/vi03/1000
 
-##### 2. Create Wallet
-http://localhost:8080/api/v2/wallet/create/vi03/1
+  ##### 2.2.3. Transfer Money
+  http://localhost:8080/api/v2/wallet/transfer/tx01/VI01/vi03/100/Test/1
 
-##### 3. Set Wallet state
-http://localhost:8080/api/v2/wallet/set_state/vi03/1
-
-##### 4. View wallet balance
-http://localhost:8080/api/v2/wallet/balance/vi03
-
-##### 5. Credit
-http://localhost:8080/api/v2/wallet/deposit/vi03/vi03/1000
-
-##### 6. Debit
-http://localhost:8080/api/v2/wallet/withdraw/vi03/vi03/1000
-
-##### 7. Transfer Money
-http://localhost:8080/api/v2/wallet/transfer/tx01/VI01/vi03/100/Test/1
-
-##### 8. Summary
-http://localhost:8080/api/v2/wallet/summary
-
-Running
-**********************************************************************************************
-### 1. Install go
-sudo apt-get update
-sudo apt-get -y upgrade
-cd /tmp
-wget https://dl.google.com/go/go1.11.linux-amd64.tar.gz
-sudo tar -xvf go1.11.linux-amd64.tar.gz
-sudo mv go /usr/local
-
-export GOROOT=/usr/local/go
-mkdir -p $HOME/go/src
-export GOPATH=$HOME/go
-
-go get -d https://github.com/binhdt101/test_eth.git
-go get -d https://github.com/ethereum/go-ethereum
-
-cd $HOME/go/src/test_eth/test2
-### Preparing
-
-+ go run add_peers.go
-+ go run deploy_wallet.go
-### Running webserver & listening server
-
-+ go run web_server.go
-+ go run block_subscribe.go
-### Running client to test
-
-### API:
-1. List accounts:
-http://localhost:8080/api/v1/wallet/accounts
-2. View Blance of account
-http://localhost:8080/api/v1/wallet/balance/ffbcd481c1330e180879b4d2b9b50642eea43c02
-3. Transfer Token from ffbcd481c1330e180879b4d2b9b50642eea43c02  to a17a7a153c8d873a1df803c74e0664c13726f5e8 with mount of 2 and note of "Test"
-http://localhost:8080/api/v1/wallet/transfer/ffbcd481c1330e180879b4d2b9b50642eea43c02/a17a7a153c8d873a1df803c74e0664c13726f5e8/2/Test
-4. View report
-http://localhost:8080/api/v1/wallet/report
+### 2.3 Report
+  http://localhost:8080/api/v2/wallet/summary

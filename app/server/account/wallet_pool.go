@@ -1,26 +1,21 @@
 package account
 
 import (
-    "github.com/binhnt-teko/test_loyalty/src/config"
-    // "time"
+    "github.com/binhnt-teko/test_loyalty/app/server/config"
     "math/big"
-    // "strings"
     "fmt"
-    // "encoding/json"
     "errors"
     "strings"
     "github.com/ethereum/go-ethereum/crypto"
     "github.com/ethereum/go-ethereum/common"
     _ "github.com/jinzhu/gorm/dialects/mysql"
     "github.com/ethereum/go-ethereum/core/types"
-    "github.com/ethereum/go-ethereum/accounts/abi/bind"
-    "github.com/jinzhu/gorm"
     "encoding/hex"
-    "github.com/binhnt-teko/test_loyalty/app/server/contracts"
     "sync"
     "math"
     "strconv"
-    "bytes"
+    "time"
+    "encoding/json"
 )
 
 type WalletPool struct {
@@ -33,47 +28,47 @@ var Pool *WalletPool
 
 //// ####################################### Processing Support function ################
 func Init(){
-      Pool :=  &WalletPool{
+      Pool =  &WalletPool{
         Current: 0,
       }
-      WalletPool.LoadAccounts()
-      WalletPool.AutoFillGas()
+      Pool.LoadAccounts()
+      // Pool.AutoFillGas()
 }
 
-func (fw *WalletAccount) GetAccountEth() *WalletAccount{
-    fw.Mutex.Lock()
-    defer fw.Mutex.Unlock()
-    len := len(fw.Wallets)
+func (wp *WalletPool) GetAccountEth() *WalletAccount{
+    wp.Mutex.Lock()
+    defer wp.Mutex.Unlock()
+    len := len(wp.Wallets)
     if len == 0 {
       return nil
     }
-    if fw.Current >= len {
-         fw.Current = fw.Current % len
+    if wp.Current >= len {
+         wp.Current = wp.Current % len
     }
-    wallet := fw.Wallets[fw.Current]
-    fw.Current = fw.Current + 1
+    wallet := wp.Wallets[wp.Current]
+    wp.Current = wp.Current + 1
     return wallet
 }
 
-func (wp *WalletPool) LoadAccounts(){
+func (wp *WalletPool) LoadAccounts() error {
   tokens, err  := config.Redis.Keys("token.*").Result()
   if err != nil {
     // handle error
     fmt.Println(" Cannot get addresses ")
-    return nil, err
+    return err
   }
 
-  accounts := []TokenAccount{}
+  accounts := []config.TokenAccount{}
   for _, token := range tokens {
     val, err := config.Redis.Get(token).Result()
     if err != nil {
         fmt.Println(time.Now()," Cannot find token: ", token)
         continue
     }
-    account := &config.TokenAccount{}
-    err := json.Unmarshal([]byte(val), data)
+    account := config.TokenAccount{}
+    err = json.Unmarshal([]byte(val), &account)
     if err != nil {
-        fmt.Println(time.Now()," Cannot parse data ", err)
+        fmt.Println(time.Now()," Cannot parse account ", err)
         continue
     }
     accounts = append(accounts,account)
@@ -101,6 +96,7 @@ func (wp *WalletPool) LoadAccounts(){
   wp.Mutex.Lock()
   defer wp.Mutex.Unlock()
   wp.Wallets = wallets
+  return nil
 }
 
 func (wp *WalletPool) GetAccountList() ([]common.Address) {
@@ -108,7 +104,7 @@ func (wp *WalletPool) GetAccountList() ([]common.Address) {
    wp.Mutex.Lock()
    defer wp.Mutex.Unlock()
    accounts := []common.Address{}
-   for _,wallet := range fw.Wallets {
+   for _,wallet := range wp.Wallets {
        if wallet.Active {
          address := common.HexToAddress("0x"+wallet.Address)
          accounts = append(accounts,address)
@@ -118,7 +114,7 @@ func (wp *WalletPool) GetAccountList() ([]common.Address) {
    return accounts
 }
 
-func (wp *WalletPool) GetAccountEthAddress(addr string) *WalletAccount {
+func (wp *WalletPool) GetWallet(addr string) *WalletAccount {
     for _, wallet := range wp.Wallets {
        if wallet.Address == addr {
          return wallet
@@ -128,16 +124,17 @@ func (wp *WalletPool) GetAccountEthAddress(addr string) *WalletAccount {
 }
 
 func (wp *WalletPool) EthTransfer(from string,to string,amount string) (string,error) {
-   wallet := fw.GetAccountEthAddress(from)
+   cfg := config.Configuration
+   wallet := wp.GetWallet(from)
 
    fromAddress := common.HexToAddress("0x" + wallet.Address)
-   nonce, err := wallet.Routing.PendingNonceAt(fromAddress)
+   nonce, err := wallet.PendingNonceAt(fromAddress)
    if err != nil {
      fmt.Println("Error in getting nonce ")
      return "", err
    }
 
-   gLimit := cfg.Contract.GasLimit
+   gLimit := cfg.Contract.GasLimitDefault
    gPrice := cfg.Contract.GasPrice
 
    gasLimit := uint64(gLimit)
@@ -172,73 +169,90 @@ func (wp *WalletPool) EthTransfer(from string,to string,amount string) (string,e
    signedTx, err := rawTx.WithSignature(signer, signature)
 
    txhash := strings.TrimPrefix(signedTx.Hash().Hex(),"0x")
-   err = wallet.Routing.SubmitTransaction(signedTx,nonce)
+   err = wallet.SubmitTransaction(signedTx,nonce)
 
    return txhash, err
 }
 
 func (wp *WalletPool) AutoFillGas() []string {
-    fw.Mutex.Lock()
-    defer fw.Mutex.Unlock()
+    wp.Mutex.Lock()
+    defer wp.Mutex.Unlock()
 
+    cfg := config.Configuration
     ret := []string{}
-    for _, wallet := range fw.Wallets {
-      bal, err := wallet.EthBalaneOf()
-      if err != nil {
-         fmt.Println("Cannot get wallet balance. Deactive wallet")
-         wallet.Active = false
-         continue
-      }
-      ba,_ := bal.Float64()
-      if ba < 1000 {
-         fmt.Println("Create transaction to fillGass from budget")
-         var fill_account int = int(1000 - ba)
-
-         txhash, err := fw.EthTransfer(cfg.F5Contract.EthBudget, wallet.Address,strconv.Itoa(fill_account))
-         if err != nil {
-           fmt.Println("Cannot fill more gas. Deactive wallet ")
+    for _, wallet := range wp.Wallets {
+        bal, err := wallet.EthBalaneOf()
+        if err != nil {
+           fmt.Println("Cannot get wallet balance. Deactive wallet")
            wallet.Active = false
            continue
-         }
-         fmt.Println("Fill Eth to account: ", wallet.Address, " transaction: ", txhash)
-         ret = append(ret,txhash)
-      } else {
-         fmt.Println("Account: ", wallet.Address, " balance: ", ba)
-      }
+        }
+        ba,_ := bal.Float64()
+        if ba < 1000 {
+           fmt.Println("Create transaction to fillGass from budget")
+           var fill_account int = int(1000 - ba)
+
+           txhash, err := wp.EthTransfer(cfg.Contract.EthBudget, wallet.Address,strconv.Itoa(fill_account))
+           if err != nil {
+             fmt.Println("Cannot fill more gas. Deactive wallet ")
+             wallet.Active = false
+             continue
+           }
+           fmt.Println("Fill Eth to account: ", wallet.Address, " transaction: ", txhash)
+           ret = append(ret,txhash)
+        } else {
+           fmt.Println("Account: ", wallet.Address, " balance: ", ba)
+        }
     }
     return ret
 }
 
-//#########################   Non blockchain function ##########################
-func (wp *WalletPool) NewAccountEth() (string, error) {
-      privateKey, err := crypto.GenerateKey()
-      if err != nil {
-        return "",err
-      }
-      address := crypto.PubkeyToAddress(privateKey.PublicKey)
+func (wp *WalletPool) NewWalletAccount() (string, error) {
+    wp.Mutex.Lock()
+    defer wp.Mutex.Unlock()
+    privateKey, err := crypto.GenerateKey()
+    if err != nil {
+      return "",err
+    }
+    address := crypto.PubkeyToAddress(privateKey.PublicKey)
 
-      account := address.Hex()
-      account = strings.TrimPrefix(account,"0x")
-      account = strings.ToLower(account)
+    account := address.Hex()
+    account = strings.TrimPrefix(account,"0x")
+    account = strings.ToLower(account)
 
-      priKey :=  hex.EncodeToString(crypto.FromECDXSA(privateKey))
+    priKey :=  hex.EncodeToString(crypto.FromECDSA(privateKey))
 
-      new_account := &TokenAccount{
-        Address: account,
-        PrivateKey: priKey,
-        Active: true,
-      }
+    new_account := &config.TokenAccount{
+      Address: account,
+      PrivateKey: priKey,
+    }
+    wallet := WalletAccount{
+      Address: account,
+      PrivateKey: privateKey,
+      Nonce: 0,
+      Account: new_account,
+      Active: true,
+    }
+    wp.Wallets = append(wp.Wallets,&wallet)
+    return  address.Hex(), nil
+}
 
-      fmt.Println("Update account to redis ")
-
-      fmt.Println("Update account to wallet ")
-      wallet := WalletAccount{
-        Address: account,
-        PrivateKey: privateKey,
-        Nonce: 0,
-        Account: new_account,
-        Active: false,
-      }
-      fw.Wallets = append(fw.Wallets,&wallet)
-      return account, nil
+func (wp *WalletPool) Save() error {
+  fmt.Println("WalletAccount.GetAccountList: start read wallets")
+  wp.Mutex.Lock()
+  defer wp.Mutex.Unlock()
+  for _,wallet := range wp.Wallets {
+    account := wallet.Account
+    value, err := json.Marshal(wallet.Account)
+    if err != nil {
+        fmt.Println("Cannot convert to json: ", err)
+        continue
+    }
+    err = config.Redis.Set("token." + account.Address,string(value), 0).Err()
+    if err != nil {
+      fmt.Println("Cannot save to redis : ", err)
+    }
+  }
+  fmt.Println("Finished save wallets to redis")
+  return nil
 }

@@ -7,43 +7,174 @@ import (
   // "encoding/json"
   "errors"
   "strings"
-  "github.com/ethereum/go-ethereum/crypto"
+  // "github.com/ethereum/go-ethereum/crypto"
   "github.com/ethereum/go-ethereum/common"
-  _ "github.com/jinzhu/gorm/dialects/mysql"
-  "github.com/ethereum/go-ethereum/core/types"
+  // _ "github.com/jinzhu/gorm/dialects/mysql"
+  // "github.com/ethereum/go-ethereum/core/types"
   "github.com/ethereum/go-ethereum/accounts/abi/bind"
-  "github.com/jinzhu/gorm"
-  "encoding/hex"
-  "github.com/binhnt-teko/test_loyalty/app/server/contracts"
-  "sync"
-  "math"
+  // "github.com/jinzhu/gorm"
+  // "encoding/hex"
+  // "sync"
+  // "math"
   "strconv"
-  "bytes"
+  // "bytes"
+  // "github.com/binhnt-teko/test_loyalty/app/server/config"
+  "github.com/binhnt-teko/test_loyalty/app/server/connection"
+  "github.com/binhnt-teko/test_loyalty/app/server/helper"
 )
 
-//// ####################################### Blockchain call function ################
-func  (fw *WalletHandler) CreditHistory() []string {
+func  (fw *Contract) CreditHistory() []string {
   retry := 0
   for retry < 3 {
-    conn := fw.Client.GetConnection()
+    conn := connection.Pool.GetConnection()
     ret, err := fw.creditHistory(conn)
     if err == nil {
        return ret
     }
-    if !isConnectionError(err) {
+    if !helper.IsConnectionError(err) {
         return ret
     }
-    fw.Client.DeactiveNode(conn.Name)
+    connection.Pool.DeactiveNode(conn.Name)
     retry = retry + 1
   }
   fmt.Println("Failed to retry call creditHistory 3 times. ")
   return []string{}
 }
 
-func (fw *WalletHandler)  creditHistory(conn *RpcConnection) ([]string, error) {
+func  (fw *Contract) DebitHistory() []string {
+  retry := 0
+  for retry < 3 {
+    conn := connection.Pool.GetConnection()
+    ret, err := fw.debitHistory(conn)
+    if err == nil {
+       return ret
+    }
+    if !helper.IsConnectionError(err) {
+        return ret
+    }
+    connection.Pool.DeactiveNode(conn.Name)
+    retry = retry + 1
+  }
+  fmt.Println("Failed to retry call debitHistory 3 times. ")
+  return []string{}
+}
+
+func  (fw *Contract) TransferHistory() []string {
+  retry := 0
+  for retry < 3 {
+    conn := connection.Pool.GetConnection()
+    ret, err := fw.transferHistory(conn)
+    if err == nil {
+       return ret
+    }
+    if !helper.IsConnectionError(err) {
+        return ret
+    }
+    connection.Pool.DeactiveNode(conn.Name)
+    retry = retry + 1
+  }
+  fmt.Println("Failed to retry call transferHistory 3 times. ")
+  return []string{}
+}
+
+func  (fw *Contract) StashNames() []string {
+  retry := 0
+  for retry < 3 {
+    conn := connection.Pool.GetConnection()
+    ret, err := fw.stashNames(conn)
+    if err == nil {
+       return ret
+    }
+    if !helper.IsConnectionError(err) {
+        return ret
+    }
+    connection.Pool.DeactiveNode(conn.Name)
+    retry = retry + 1
+  }
+  fmt.Println("Failed to retry call transferHistory 3 times. ")
+  return []string{}
+}
+
+func  (fw *Contract)  GetSummary() (int16,*big.Int, *big.Int, *big.Int,*big.Int)   {
+  retry := 0
+  for retry < 3 {
+    conn := connection.Pool.GetConnection()
+    n_account, n_wallet, n_credit, n_debit, n_transfer, err := fw.getSummary(conn)
+    if err == nil {
+       return n_account, n_wallet, n_credit, n_debit, n_transfer
+    }
+    if !helper.IsConnectionError(err) {
+        return n_account, n_wallet, n_credit, n_debit, n_transfer
+    }
+    connection.Pool.DeactiveNode(conn.Name)
+    retry = retry + 1
+  }
+  fmt.Println("Failed to retry call transferHistory 3 times. ")
+  return 0,nil,nil,nil,nil
+}
+
+func (fw *Contract) GetBalance(stashName string) (*big.Int, error)  {
+  retry := 0
+  for retry < 3 {
+    conn := connection.Pool.GetConnection()
+    bal, err := fw.getBalance(conn,stashName)
+    fmt.Println("Get Balance: ", bal)
+    if err == nil {
+       return bal,nil
+    }
+    if !helper.IsConnectionError(err) {
+        return bal,err
+    }
+    connection.Pool.DeactiveNode(conn.Name)
+    retry = retry + 1
+  }
+  fmt.Println("Failed to retry call transferHistory 3 times. ")
+  return nil,errors.New("Connection errors")
+}
+
+func (fw *Contract) GetState(stashName string) (int8, error)  {
+  retry := 0
+  for retry < 3 {
+    conn := connection.Pool.GetConnection()
+    bal, err := fw.getState(conn,stashName)
+    if err == nil {
+       return bal,nil
+    }
+    if !helper.IsConnectionError(err) {
+        return bal,err
+    }
+    connection.Pool.DeactiveNode(conn.Name)
+    retry = retry + 1
+  }
+  fmt.Println("Failed to retry call transferHistory 3 times. ")
+  return 0,errors.New("Connection errors")
+}
+
+func (fw *Contract) GetTransferHistoryLength() (*big.Int, error)  {
+  retry := 0
+  for retry < 3 {
+    conn := connection.Pool.GetConnection()
+    n, err := fw.getTransferHistoryLength(conn)
+    if err == nil {
+       return n,nil
+    }
+    if !helper.IsConnectionError(err) {
+        return n,err
+    }
+    connection.Pool.DeactiveNode(conn.Name)
+    retry = retry + 1
+  }
+  fmt.Println("Failed to retry call transferHistory 3 times. ")
+  return big.NewInt(0),errors.New("Connection errors")
+}
+
+/**************/
+func (fw *Contract)  creditHistory(conn *connection.RpcConnection) ([]string, error) {
+  // cfg := config.Configuration
+
   ret := []string{}
-  instance, err := f5coin.NewBusiness(fw.ContractAddress,conn.Client)
-  owner := common.HexToAddress("0x"+ cfg.F5Contract.Owner)
+  instance, err := fw.ContractInstance(fw.Address,conn.Client)
+  owner := common.HexToAddress("0x"+ fw.Owner)
 
   n_credit, err := instance.GetCreditHistoryLength(&bind.CallOpts{From: owner})
   if err != nil {
@@ -64,8 +195,8 @@ func (fw *WalletHandler)  creditHistory(conn *RpcConnection) ([]string, error) {
          continue
       }
       list := []string{
-        byte32ToString(creditTx.TxRef),
-        byte32ToString(creditTx.StashName),
+        helper.Byte32ToString(creditTx.TxRef),
+        helper.Byte32ToString(creditTx.StashName),
         creditTx.Amount.String(),
         creditTx.Timestamp.String(),
       }
@@ -75,29 +206,12 @@ func (fw *WalletHandler)  creditHistory(conn *RpcConnection) ([]string, error) {
   return ret, nil
 }
 
-func  (fw *WalletHandler) DebitHistory() []string {
-  retry := 0
-  for retry < 3 {
-    conn := fw.Client.GetConnection()
-    ret, err := fw.debitHistory(conn)
-    if err == nil {
-       return ret
-    }
-    if !isConnectionError(err) {
-        return ret
-    }
-    fw.Client.DeactiveNode(conn.Name)
-    retry = retry + 1
-  }
-  fmt.Println("Failed to retry call debitHistory 3 times. ")
-  return []string{}
-}
-
-func  (fw *WalletHandler) debitHistory(conn *RpcConnection) ([]string,error) {
+func  (fw *Contract) debitHistory(conn *connection.RpcConnection) ([]string,error) {
+  // cfg := config.Configuration
   ret := []string{}
-  instance, err := f5coin.NewBusiness(fw.ContractAddress,conn.Client)
+  instance, err := fw.ContractInstance(fw.Address,conn.Client)
 
-  owner := common.HexToAddress("0x"+ cfg.F5Contract.Owner)
+  owner := common.HexToAddress("0x"+ fw.Owner)
   n_debit, err := instance.GetDebitHistoryLength(&bind.CallOpts{From: owner})
   if err != nil {
     fmt.Println("Cannot Get length of wallets, error: ",err)
@@ -117,8 +231,8 @@ func  (fw *WalletHandler) debitHistory(conn *RpcConnection) ([]string,error) {
          continue
       }
       list := []string{
-        byte32ToString(debitTx.TxRef),
-        byte32ToString(debitTx.StashName),
+        helper.Byte32ToString(debitTx.TxRef),
+        helper.Byte32ToString(debitTx.StashName),
         debitTx.Amount.String(),
         debitTx.Timestamp.String(),
       }
@@ -127,29 +241,14 @@ func  (fw *WalletHandler) debitHistory(conn *RpcConnection) ([]string,error) {
   }
   return ret,nil
 }
-func  (fw *WalletHandler) TransferHistory() []string {
-  retry := 0
-  for retry < 3 {
-    conn := fw.Client.GetConnection()
-    ret, err := fw.transferHistory(conn)
-    if err == nil {
-       return ret
-    }
-    if !isConnectionError(err) {
-        return ret
-    }
-    fw.Client.DeactiveNode(conn.Name)
-    retry = retry + 1
-  }
-  fmt.Println("Failed to retry call transferHistory 3 times. ")
-  return []string{}
-}
-func  (fw *WalletHandler) transferHistory(conn *RpcConnection) ([]string,error) {
+
+func  (fw *Contract) transferHistory(conn *connection.RpcConnection) ([]string,error) {
+  // cfg := config.Configuration
   ret := []string{}
 
-  instance, err := f5coin.NewBusiness(fw.ContractAddress,conn.Client)
+  instance, err := fw.ContractInstance(fw.Address,conn.Client)
 
-  owner := common.HexToAddress("0x"+ cfg.F5Contract.Owner)
+  owner := common.HexToAddress("0x"+ fw.Owner)
   n_transfer, err := instance.GetTransferHistoryLength(&bind.CallOpts{From: owner})
   if err != nil {
     fmt.Println("Cannot Get length of wallets, error: ",err)
@@ -169,9 +268,9 @@ func  (fw *WalletHandler) transferHistory(conn *RpcConnection) ([]string,error) 
          continue
       }
       list := []string{
-        byte32ToString(transferTx.TxRef),
-        byte32ToString(transferTx.Sender),
-        byte32ToString(transferTx.Receiver),
+        helper.Byte32ToString(transferTx.TxRef),
+        helper.Byte32ToString(transferTx.Sender),
+        helper.Byte32ToString(transferTx.Receiver),
         transferTx.Amount.String(),
         transferTx.Note,
         strconv.Itoa(int(transferTx.TxType)),
@@ -183,30 +282,17 @@ func  (fw *WalletHandler) transferHistory(conn *RpcConnection) ([]string,error) 
   return ret,nil
 }
 
-func  (fw *WalletHandler) StashNames() []string {
-  retry := 0
-  for retry < 3 {
-    conn := fw.Client.GetConnection()
-    ret, err := fw.stashNames(conn)
-    if err == nil {
-       return ret
-    }
-    if !isConnectionError(err) {
-        return ret
-    }
-    fw.Client.DeactiveNode(conn.Name)
-    retry = retry + 1
-  }
-  fmt.Println("Failed to retry call transferHistory 3 times. ")
-  return []string{}
-}
-
-func  (fw *WalletHandler) stashNames(conn *RpcConnection) ([]string,error) {
+func  (fw *Contract) stashNames(conn *connection.RpcConnection) ([]string,error) {
   ret := []string{}
 
-  instance, err := f5coin.NewBusiness(fw.ContractAddress,conn.Client)
+  instance, err := fw.ContractInstance(fw.Address,conn.Client)
 
-  owner := common.HexToAddress("0x"+ cfg.F5Contract.Owner)
+  if err != nil {
+    fmt.Println("Cannot Get contract instance: ",err)
+    return ret,err
+  }
+  fmt.Println("Owner: ", fw.Owner)
+  owner := common.HexToAddress("0x"+ fw.Owner)
   n_wallet, err := instance.GetStashNamesLenght(&bind.CallOpts{From: owner})
   if err != nil {
     fmt.Println("Cannot Get length of wallets, error: ",err)
@@ -231,7 +317,7 @@ func  (fw *WalletHandler) stashNames(conn *RpcConnection) ([]string,error) {
          continue
       }
       list := []string{
-         byte32ToString(stash_name),
+         helper.Byte32ToString(stash_name),
          bal.String(),
          strconv.Itoa(int(state)),
       }
@@ -241,33 +327,14 @@ func  (fw *WalletHandler) stashNames(conn *RpcConnection) ([]string,error) {
   return ret,nil
 }
 
+func  (fw *Contract) getSummary(conn *connection.RpcConnection) (int16,*big.Int, *big.Int, *big.Int,*big.Int, error)   {
+      instance, err := fw.ContractInstance(fw.Address,conn.Client)
 
-func  (fw *WalletHandler)  GetSummary() (int16,*big.Int, *big.Int, *big.Int,*big.Int)   {
-  retry := 0
-  for retry < 3 {
-    conn := fw.Client.GetConnection()
-    n_account, n_wallet, n_credit, n_debit, n_transfer, err := fw.getSummary(conn)
-    if err == nil {
-       return n_account, n_wallet, n_credit, n_debit, n_transfer
-    }
-    if !isConnectionError(err) {
-        return n_account, n_wallet, n_credit, n_debit, n_transfer
-    }
-    fw.Client.DeactiveNode(conn.Name)
-    retry = retry + 1
-  }
-  fmt.Println("Failed to retry call transferHistory 3 times. ")
-  return 0,nil,nil,nil,nil
-}
-
-func  (fw *WalletHandler) getSummary(conn *RpcConnection) (int16,*big.Int, *big.Int, *big.Int,*big.Int, error)   {
-      instance, err := f5coin.NewBusiness(fw.ContractAddress,conn.Client)
-
-      owner := common.HexToAddress("0x"+ cfg.F5Contract.Owner)
+      owner := common.HexToAddress("0x"+ fw.Owner)
       n_account, err := instance.GetRegistedAccEthLength(&bind.CallOpts{From: owner})
 
       if err != nil {
-        fmt.Println("Cannot Get Registed Acc Eth Length error: ",err, ", Contract: ", fw.ContractAddress.Hex())
+        fmt.Println("Cannot Get Registed Acc Eth Length error: ",err, ", Contract: ", fw.Address)
 
         return 0, nil, nil, nil, nil, err
       }
@@ -293,94 +360,44 @@ func  (fw *WalletHandler) getSummary(conn *RpcConnection) (int16,*big.Int, *big.
       }
       return  n_account, n_wallet, n_credit, n_debit, n_transfer,nil
 }
-func (fw *WalletHandler) GetBalance(stashName string) (*big.Int, error)  {
-  retry := 0
-  for retry < 3 {
-    conn := fw.Client.GetConnection()
-    bal, err := fw.getBalance(conn,stashName)
-    if err == nil {
-       return bal,nil
-    }
-    if !isConnectionError(err) {
-        return bal,err
-    }
-    fw.Client.DeactiveNode(conn.Name)
-    retry = retry + 1
-  }
-  fmt.Println("Failed to retry call transferHistory 3 times. ")
-  return nil,errors.New("Connection errors")
-}
-func (fw *WalletHandler) getBalance(conn *RpcConnection, stashName string) (*big.Int, error)  {
-    fmt.Println("WalletHandler.GetBalance: Start get balance ")
+
+func (fw *Contract) getBalance(conn *connection.RpcConnection, stashName string) (*big.Int, error)  {
+    fmt.Println("Contract.GetBalance: Start get balance ")
     conn.Mux.Lock()
     defer  conn.Mux.Unlock()
-    session,err  := f5coin.NewBusiness(fw.ContractAddress,conn.Client)
+    session,err  := fw.ContractInstance(fw.Address,conn.Client)
     if err != nil {
         fmt.Println("Cannot find F5 contract")
         return nil,err
     }
-    fmt.Println("WalletHandler.GetBalance: call  GetBalance")
+    fmt.Println("Contract.GetBalance: call  GetBalance")
 
-    owner := common.HexToAddress("0x"+ cfg.F5Contract.Owner)
+    owner := common.HexToAddress("0x"+ fw.Owner)
 
-    return session.GetBalance(&bind.CallOpts{From: owner},stringTo32Byte(stashName))
+    return session.GetBalance(&bind.CallOpts{From: owner},helper.StringTo32Byte(stashName))
 }
 
-func (fw *WalletHandler) GetState(stashName string) (int8, error)  {
-  retry := 0
-  for retry < 3 {
-    conn := fw.Client.GetConnection()
-    bal, err := fw.getState(conn,stashName)
-    if err == nil {
-       return bal,nil
-    }
-    if !isConnectionError(err) {
-        return bal,err
-    }
-    fw.Client.DeactiveNode(conn.Name)
-    retry = retry + 1
-  }
-  fmt.Println("Failed to retry call transferHistory 3 times. ")
-  return 0,errors.New("Connection errors")
-}
-func (fw *WalletHandler) getState(conn *RpcConnection, stashName string) (int8, error)  {
+func (fw *Contract) getState(conn *connection.RpcConnection, stashName string) (int8, error)  {
   conn.Mux.Lock()
   defer  conn.Mux.Unlock()
 
-  session, err := f5coin.NewBusiness(fw.ContractAddress,conn.Client)
+  session, err := fw.ContractInstance(fw.Address,conn.Client)
   if err != nil {
       fmt.Println("Cannot find F5 contract")
       return 0,err
   }
-  owner := common.HexToAddress("0x"+ cfg.F5Contract.Owner)
-  return session.GetState(&bind.CallOpts{From: owner},stringTo32Byte(stashName))
+  owner := common.HexToAddress("0x"+ fw.Owner)
+  return session.GetState(&bind.CallOpts{From: owner},helper.StringTo32Byte(stashName))
 }
 
-func (fw *WalletHandler) GetTransferHistoryLength() (*big.Int, error)  {
-  retry := 0
-  for retry < 3 {
-    conn := fw.Client.GetConnection()
-    n, err := fw.getTransferHistoryLength(conn)
-    if err == nil {
-       return n,nil
-    }
-    if !isConnectionError(err) {
-        return n,err
-    }
-    fw.Client.DeactiveNode(conn.Name)
-    retry = retry + 1
-  }
-  fmt.Println("Failed to retry call transferHistory 3 times. ")
-  return big.NewInt(0),errors.New("Connection errors")
-}
-func (fw *WalletHandler) getTransferHistoryLength(conn *RpcConnection) (*big.Int, error)  {
+func (fw *Contract) getTransferHistoryLength(conn *connection.RpcConnection) (*big.Int, error)  {
   conn.Mux.Lock()
   defer  conn.Mux.Unlock()
-  session,err := f5coin.NewBusiness(fw.ContractAddress,conn.Client)
+  session,err := fw.ContractInstance(fw.Address,conn.Client)
   if err != nil {
       fmt.Println("Cannot find F5 contract")
       return nil,err
   }
-  owner := common.HexToAddress("0x"+ cfg.F5Contract.Owner)
+  owner := common.HexToAddress("0x"+ fw.Owner)
   return session.GetTransferHistoryLength(&bind.CallOpts{From:owner})
 }

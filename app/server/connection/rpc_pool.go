@@ -1,24 +1,23 @@
 package connection
 
 import (
-   "context"
+   // "context"
    "time"
    "fmt"
    "sync"
-   "errors"
-   "strings"
-    "github.com/ethereum/go-ethereum/core/types"
-    "github.com/ethereum/go-ethereum/common"
-    "github.com/ethereum/go-ethereum"
-    "math/big"
-    "math"
-    "github.com/binhnt-teko/test_loyalty/src/config"
+   // "errors"
+   // "strings"
+    // "github.com/ethereum/go-ethereum/core/types"
+    // "github.com/ethereum/go-ethereum/common"
+    // "github.com/ethereum/go-ethereum"
+    // "math/big"
+    // "math"
+    "github.com/binhnt-teko/test_loyalty/app/server/config"
 )
 
 type RpcPool struct {
   Nodes []*EthNode
   Current int
-  TxCh chan *TxTransaction
   mutex sync.Mutex
   Mode int
   AccountNode map[string]*EthNode
@@ -42,7 +41,6 @@ func Init() {
      Pool =  &RpcPool{
         Nodes: nodes,
         Current: -1,
-        TxCh: txCh,
         Mode: mode,
         AccountNode: accountNode,
      }
@@ -51,28 +49,16 @@ func Init() {
 func (r *RpcPool) Process(){
       for {
           select {
-          case <-time.After(5*time.Second):
-               go func() {
-                 r.UpdateHealth()
-               }()
-            case  tx:= <- r.TxCh:
+              case <-time.After(5*time.Second):
                    go func() {
-                      fmt.Println("Get Transaction Message from channel")
-                       start := time.Now().UnixNano()
-                        err :=  r.SendTransaction(tx.Data, tx.Nonce)
-                        if err != nil {
-                            fmt.Println("Error send transaction", tx.Nonce," error:", err)
-                        }
-                        end := time.Now().UnixNano()
-                        diff:= (end-start)/1000
-                        fmt.Println("End Submit transaction: ", tx.Nonce,", Time: ", diff)
-                  }()
-                }
+                     r.UpdateHealth()
+                   }()
+               }
         }
 }
 func (r *RpcPool) UpdateHealth(){
-    // r.mutex.Lock()
-    // defer r.mutex.Unlock()
+    r.mutex.Lock()
+    defer r.mutex.Unlock()
     fmt.Println("Process to check health of node. To automatically active node")
     for _, node := range r.Nodes {
       if !node.Active {
@@ -106,7 +92,7 @@ func (r *RpcPool) GetConnectionByAccount(addr string)  (*RpcConnection) {
     if nNode >0 {
         node, ok := r.AccountNode[addr]
         if !ok  || node.Active == false {
-            fmt.Println("Update map: Add account: ", addr)
+            fmt.Println("RpcPool.GetConnectionByAccount: Update map: Add account: ", addr)
             nAccounts := len(r.AccountNode)
             idx := nAccounts % nNode
             node = r.Nodes[idx]
@@ -127,7 +113,7 @@ func (r *RpcPool) GetConnection() (*RpcConnection) {
           r.Current = (r.Current + 1 ) % len
           node := r.Nodes[r.Current]
           if node.Active {
-            fmt.Println("Get connection: ", r.Current, " Node: ", node.HttpUrl)
+            // fmt.Println("Get connection: ", r.Current, " Node: ", node.HttpUrl)
              return node.GetConnection()
           }
           retry = retry + 1

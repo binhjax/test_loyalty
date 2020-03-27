@@ -1,17 +1,17 @@
 package config
 
 import (
-	// "fmt"
-  // "strings"
-  // "github.com/go-redis/redis"
   "encoding/json"
 )
 
+//ApiResponse will return default
 type ApiResponse struct  {
+    //In
 	  Rescode int  `json:"rescode"`
 		Resdecr string  `json:"resdecr"`
 		Resdata interface{}  `json:"resdata"`
 }
+
 
 func (res *ApiResponse) ToJson() string {
 	  b, err := json.Marshal(res)

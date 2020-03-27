@@ -1,0 +1,61 @@
+definitions:
+  ApiResponse:
+    description: ApiResponse will return default
+    properties:
+      rescode:
+        description: In
+        format: int64
+        type: integer
+        x-go-name: Rescode
+      resdata:
+        type: object
+        x-go-name: Resdata
+      resdecr:
+        type: string
+        x-go-name: Resdecr
+    type: object
+    x-go-package: github.com/binhnt-teko/test_loyalty/app/server/config
+info: {}
+paths:
+  /api/admin/log:
+    post:
+      description: Get blockchain log
+      operationId: logEndpoint
+      responses:
+        "200":
+          $ref: '#/responses/commonResponse'
+      tags:
+      - admin_viewlog
+  /api/admin/network/addpeers:
+    post:
+      operationId: addPeersEndpoint
+      responses:
+        "200":
+          $ref: '#/responses/commonResponse'
+      summary: Addpeers in all node of ethereum blockchain .
+      tags:
+      - admin_addpeers
+  /api/admin/network/pool:
+    post:
+      operationId: poolEndpoint
+      responses:
+        "200":
+          $ref: '#/responses/commonResponse'
+      summary: Get current pool of one geth  .
+      tags:
+      - admin_pool
+  /api/admin/transaction:
+    post:
+      operationId: transactionEndpoint
+      responses:
+        "200":
+          $ref: '#/responses/commonResponse'
+      summary: Get current pool of one geth  .
+      tags:
+      - admin_transaction
+responses:
+  commonResponse:
+    description: This return default
+    schema:
+      $ref: '#/definitions/ApiResponse'
+swagger: "2.0"

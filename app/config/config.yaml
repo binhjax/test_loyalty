@@ -21,6 +21,7 @@ webserver:
   nonceMode: 1
 keys:
   loadKey: true
+  accountfile: ../../config/account.yml
   keystore: ../../keystore
   password: "123456"
 networks:
@@ -37,3 +38,30 @@ redis:
   host: localhost:6379
   password: ""
   db: 0
+rabbitmq:
+  host: localhost
+  port: 5672
+  user: vinsmart
+  password: 123456
+  numPub: 2
+  numSub: 2
+  queues:
+    request: "request"
+    task: "tasks"
+    processing: "processing"
+    error: "error"
+    result: "result"
+contract:
+  gasprice: "1"
+  gaslimitdefault: 900000
+  gaslimit:
+    create: 900000
+    credit: 900000
+    debit: 900000
+    deploy: 1000000
+    register: 900000
+    state: 900000
+    tranfer: 900000
+  ethBudget: ffbcd481c1330e180879b4d2b9b50642eea43c02
+  owner: ffbcd481c1330e180879b4d2b9b50642eea43c02
+  address: 0x5329860483faef566Cae32971475038448017f88

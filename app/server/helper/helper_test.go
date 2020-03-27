@@ -3,7 +3,7 @@ package helper
 import (
    "testing"
    "fmt"
-   "github.com/binhnt-teko/test_loyalty/src/config"
+   "github.com/binhnt-teko/test_loyalty/app/server/config"
 )
 
 func TestGetMD5Hash(*testing.T) {

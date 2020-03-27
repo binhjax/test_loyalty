@@ -59,6 +59,15 @@ func Init() {
             fmt.Println(time.Now()," Cannot parse data ", err)
             panic(err1)
         }
+        if err := LoadJwtAccountsFromFile(config.Jwt.AccountFile); err != nil {
+          fmt.Println(time.Now()," Cannot load jwt account ", err)
+          panic(err)
+        }
+        if err := LoadAccountsFromFile(config.Keys.Keystore); err != nil {
+          fmt.Println(time.Now()," Cannot load etherum account ", err)
+          panic(err)
+        }
+
         Configuration = config
         Redis = client
         return

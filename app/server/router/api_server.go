@@ -2,13 +2,8 @@ package router
 
 import (
 	"fmt"
-	// "github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
   "github.com/binhnt-teko/test_loyalty/app/server/config"
-  // "os"
-  // "github.com/binhnt-teko/test_loyalty/app/server/api"
-	 // "github.com/binhnt-teko/test_loyalty/app/server/middleware"
-	// "sync"
 )
 
 func ApiServer(){
@@ -24,7 +19,7 @@ func ApiServer(){
 		fmt.Println("Start server using TLS ")
 		panic(server.ListenAndServeTLS(":"+ config.Configuration.Webserver.Port, config.Configuration.Webserver.CertificateFile,config.Configuration.Webserver.KeyFile))
 	} else {
-		fmt.Println("Start server without TLS  ")
+		fmt.Println("Start server without TLS : " + config.Configuration.Webserver.Port)
 		panic(server.ListenAndServe(":"+ config.Configuration.Webserver.Port))
 	}
 }

@@ -85,7 +85,7 @@ func LoadJwtAccountsFromFile(filePath string) error {
     return nil
 }
 
-func LoadAccountsFromFile(root string) error {
+func LoadAccountsFromKeyStore(root string) error {
 	    //root := cf.Keys.KeyStore
 	    fmt.Println("Start load accounts from keystores: ",root)
 	    var files []string
@@ -135,5 +135,72 @@ func LoadAccountsFromFile(root string) error {
            }
 	    }
 	    fmt.Println("End load accounts from keystores: ",root)
-      return nil 
+      return nil
+}
+
+func LoadAccountsFromFile(filePath string) error {
+    // filePath := cf.Jwt.AccountFile
+    if _, err := os.Stat(filePath); os.IsNotExist(err) {
+        return err
+    }
+    yamlFile, err := ioutil.ReadFile(filePath)
+    if err != nil {
+        fmt.Println("Read file: "+ filePath + " error: " + err.Error())
+        return err
+    }
+    accountList := []TokenAccount{}
+    err = yaml.Unmarshal(yamlFile, &accountList)
+    if err != nil {
+        fmt.Println("Unmarshal: " +  err.Error())
+        return err
+    }
+    for _, account :=  range accountList {
+      value, err := json.Marshal(account)
+      if err != nil {
+          fmt.Println("Cannot convert to json: ", err)
+          continue
+      }
+      err = Redis.Set("token." + account.Address,string(value), 0).Err()
+      if err != nil {
+        fmt.Println("Cannot save to redis : ", err)
+      }
+    }
+    fmt.Println("End load accounts from file: ",filePath)
+    return nil
+}
+func SaveAccountsToFile(filePath string) error {
+      tokens, err  := Redis.Keys("token.*").Result()
+      if err != nil {
+        // handle error
+        fmt.Println(" Cannot get addresses ")
+        return err
+      }
+      accounts := []TokenAccount{}
+      for _, token := range tokens {
+        val, err := Redis.Get(token).Result()
+        if err != nil {
+            fmt.Println(time.Now()," Cannot find token: ", token)
+            continue
+        }
+        account := TokenAccount{}
+        err = json.Unmarshal([]byte(val), &account)
+        if err != nil {
+            fmt.Println(time.Now()," Cannot parse account ", err)
+            continue
+        }
+        accounts = append(accounts,account)
+      }
+
+      accountlist, err := yaml.Marshal(accounts)
+      if err != nil {
+          fmt.Println("Json parse accounts error: : ",err)
+          return err
+      }
+      err = ioutil.WriteFile(filePath, accountlist, 0644)
+      if err != nil {
+        fmt.Println("Cannot save to file ",err)
+        return err
+      }
+      fmt.Println("End save accounts to file: ",filePath)
+      return nil
 }

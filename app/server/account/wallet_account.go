@@ -1,24 +1,20 @@
 package account
 
 import (
-  "github.com/binhnt-teko/test_loyalty/src/config"
-  "math/big"
-  // "github.com/ethereum/go-ethereum"
-  "github.com/ethereum/go-ethereum/core/types"
-  // "github.com/ethereum/go-ethereum/accounts/abi"
-  "github.com/ethereum/go-ethereum/common"
-  "github.com/ethereum/go-ethereum/crypto"
-  "github.com/ethereum/go-ethereum/accounts/abi/bind"
-  "errors"
-  "strings"
-  "fmt"
-  // "encoding/json"
-  "crypto/ecdsa"
-  "encoding/hex"
-  // "time"
-  "math"
-  "github.com/jinzhu/gorm"
-  "sync"
+    "github.com/binhnt-teko/test_loyalty/app/server/config"
+    "math/big"
+    "github.com/ethereum/go-ethereum/core/types"
+    "github.com/ethereum/go-ethereum/common"
+    "github.com/ethereum/go-ethereum/crypto"
+    "github.com/ethereum/go-ethereum/accounts/abi/bind"
+    "errors"
+    "strings"
+    "fmt"
+    "crypto/ecdsa"
+    "encoding/hex"
+    "math"
+    "sync"
+    "sync/atomic"
 )
 
 type WalletAccount struct {
@@ -34,7 +30,11 @@ func  (w *WalletAccount) GetPrivateKey() string {
      return hex.EncodeToString(crypto.FromECDSA(w.PrivateKey))
 }
 
+func (w *WalletAccount) IsAvailable() bool {
+   return w.Active
+}
 func  (w *WalletAccount) NewTransactor() *bind.TransactOpts {
+      cfg := config.Configuration
       key := w.PrivateKey
     	keyAddr := crypto.PubkeyToAddress(key.PublicKey)
     	auth := &bind.TransactOpts{
@@ -51,18 +51,19 @@ func  (w *WalletAccount) NewTransactor() *bind.TransactOpts {
     		},
     	}
      gasPrice := new(big.Int)
-     gasPrice.SetString(cfg.F5Contract.GasPrice,10)
+     gasPrice.SetString(cfg.Contract.GasPrice,10)
      auth.GasPrice = gasPrice
-     auth.GasLimit = cfg.F5Contract.GasLimitDefault
+     auth.GasLimit = cfg.Contract.GasLimitDefault
      return auth
 }
 
-func (w *WalletAccount) EthTransfer(cfg *config.Config, to string, amount string) (string,uint64,error)  {
+func (w *WalletAccount) EthTransfer(to string, amount string) (string,uint64,error)  {
+      cfg := config.Configuration
       //1. Get nonce
       nonce := w.GetNonce()
 
       //2. Prepare transaction
-      gLimit := cfg.Contract.GasLimit
+      gLimit := cfg.Contract.GasLimitDefault
       gPrice := cfg.Contract.GasPrice
 
       fromAddress := common.HexToAddress("0x" + w.Address)
@@ -95,7 +96,7 @@ func (w *WalletAccount) EthTransfer(cfg *config.Config, to string, amount string
       signer := types.FrontierSigner{}
       signature, err := crypto.Sign(signer.Hash(rawTx).Bytes(), w.PrivateKey)
       if err != nil {
-        fmt.Println(" Cannot sign contract: ", err)
+        fmt.Println(" Cannot sign contxract: ", err)
         return "",0,err
       }
 
@@ -103,7 +104,7 @@ func (w *WalletAccount) EthTransfer(cfg *config.Config, to string, amount string
 
       txhash := strings.TrimPrefix(signedTx.Hash().Hex(),"0x")
 
-      err = w.Routing.SubmitTransaction(signedTx,nonce)
+      err = w.SubmitTransaction(signedTx,nonce)
 
       return txhash, nonce, err
 }
@@ -113,5 +114,25 @@ func (w *WalletAccount) EthBalaneOf() (*big.Float, error) {
     w.Mutex.Lock()
     defer w.Mutex.Unlock()
     account := common.HexToAddress("0x" + w.Address)
-    return w.Routing.BalanceAt(account)
+    return w.BalanceAt(account)
+}
+
+func (w *WalletAccount) UpdateNonce(nonce uint64)  {
+    fmt.Println("Update nonce of: ",w.Address," Nonce:",nonce)
+    atomic.StoreUint64(&w.Nonce, nonce-1)
+}
+
+func (w *WalletAccount) GetNonce() uint64 {
+    keyAddr := common.HexToAddress(w.Address)
+    nonce, err := w.PendingNonceAt(keyAddr)
+    if err != nil {
+      fmt.Errorf("failed to retrieve account nonce: %v", err)
+      w.UpdateNonce(0)
+      return 0
+    }
+    fmt.Println("Sync nonce from eth: ",nonce)
+    w.UpdateNonce(nonce)
+    // nonce = atomic.AddUint64(&w.Nonce, 1)
+    fmt.Println("WalletAccount.GetNonce: Get Nonce:",nonce)
+    return nonce
 }

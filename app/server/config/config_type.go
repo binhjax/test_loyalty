@@ -27,7 +27,6 @@ type TokenAccount struct {
 type SpecialDate struct {
     time.Time
 }
-
 type Config struct {
     Version string `yaml:"version" json:"version"`
     Released SpecialDate `yaml:"released" json:"released"`
@@ -55,6 +54,7 @@ type Config struct {
 		} `yaml:"webserver" json:"webserver"`
     Keys struct {
        LoadKey bool `yaml:"loadkey" json:"loadkey"`
+       AccountFile string `yaml:"accountfile" json:"accountfile"`
        Keystore string `yaml:"keystore" json:"keystore"`
        Password string `yaml:"password" json:"password"`
     } `yaml:"keys" json:"keys"`
@@ -70,6 +70,23 @@ type Config struct {
 			  Password string `yaml:"password" json:"password"`
 			  Db int `yaml:"db" json:"db"`
 		} `yaml:"redis" json:"redis"`
+    RabbitMQ struct {
+      Host string `yaml:"host" json:"host"`
+      Port uint64 `yaml:"port" json:"port"`
+      User string `yaml:"user" json:"user"`
+      Password string `yaml:"password" json:"password"`
+      NumPub int `yaml:"numPub" json:"numPub"`
+      NumSub int `yaml:"numSub" json:"numSub"`
+      Queues map[string]string `yaml:"queues" json:"queues"`
+    } `yaml:"rabbitmq" json:"rabbitmq"`
+    Contract struct {
+      GasPrice string `yaml:"gasprice" json:"gasprice"`
+      GasLimitDefault uint64 `yaml:"gaslimitdefault" json:"gaslimitdefault"`
+      GasLimit map[string]uint64 `yaml:"gaslimit" json:"gaslimit"`
+      EthBudget string `yaml:"ethBudget" json:"ethBudget"`
+      Owner string `yaml:"owner" json:"owner"`
+      Address string `yaml:"address" json:"address"`
+    } `yaml:"contract" json:"contract"`
 }
 
 func (sd *SpecialDate) UnmarshalYAML(unmarshal func(interface{}) error) error {

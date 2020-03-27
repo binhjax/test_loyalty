@@ -1,16 +1,18 @@
 package helper
 
 import (
-	"fmt"
-  "os"
-	"strings"
-  "github.com/binhnt-teko/test_loyalty/src/config"
-  "crypto/md5"
-	"encoding/hex"
-	"github.com/ethereum/go-ethereum/crypto"
-	"gopkg.in/yaml.v2"
-  "io/ioutil"
-	wa "github.com/binhnt-teko/test_loyalty/app/server/account"
+		"fmt"
+	  // "os"
+		"strings"
+	  "github.com/binhnt-teko/test_loyalty/app/server/config"
+	  "crypto/md5"
+		"encoding/hex"
+		// "github.com/ethereum/go-ethereum/crypto"
+		// "gopkg.in/yaml.v2"
+	  // "io/ioutil"
+		// wa "github.com/binhnt-teko/test_loyalty/app/server/account"
+		"time"
+	  "bytes"
 )
 
 func GetMD5Hash(text string) string {
@@ -32,18 +34,18 @@ func JwtVerifyUsername(username string,password string) bool {
 	return true
 }
 
-func stringTo32Byte(data string) [32]byte {
+func StringTo32Byte(data string) [32]byte {
   //hexstring := hex.EncodeToString([]byte(data))
   var arr [32]byte
 	copy(arr[:], data)
   return arr
 }
 
-func byte32ToString(data [32]byte) string {
+func Byte32ToString(data [32]byte) string {
   return string(bytes.Trim(data[:], "\x00"))
 }
 
-func isConnectionError(err error) bool {
+func IsConnectionError(err error) bool {
     err_msg := err.Error()
     if strings.Contains(err_msg, "connection refused") {
         return true

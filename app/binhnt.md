@@ -1,3 +1,6 @@
+## add user in rabbitmq
+docker-compose exec rabbitmq  rabbitmqctl add_user vinsmart 123456
+
 ###   Support functions
 go get github.com/btfak/sntp
 go get -u github.com/beevik/ntp
