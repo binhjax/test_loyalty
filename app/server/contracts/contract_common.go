@@ -1,4 +1,4 @@
-package admin
+package contracts
 
 import (
 		"fmt"
@@ -19,12 +19,13 @@ import (
 	  // "bytes"
 		"context"
     // "github.com/binhnt-teko/test_loyalty/app/server/connection"
-    "github.com/binhnt-teko/test_loyalty/app/server/contracts"
+    // "github.com/binhnt-teko/test_loyalty/app/server/admin"
     "github.com/ethereum/go-ethereum"
      "github.com/ethereum/go-ethereum/common"
        "github.com/ethereum/go-ethereum/accounts/abi"
      // "github.com/ethereum/go-ethereum/core/types"
      "github.com/ethereum/go-ethereum/ethclient"
+		   "github.com/ethereum/go-ethereum/accounts/abi/bind"
 )
 
 func GetLog(FromBlock int64, ToBlock int64, Addresses []string ) ( string,error){
@@ -59,7 +60,7 @@ func GetLog(FromBlock int64, ToBlock int64, Addresses []string ) ( string,error)
         return "", err
     }
     fmt.Println("log:", logs)
-    contractAbi, err := abi.JSON(strings.NewReader(string(contracts.ContractsABI)))
+    contractAbi, err := abi.JSON(strings.NewReader(string(LContract.Content.ContractABI)))
     if err != nil {
         fmt.Println("Cannot get smart contract ", err)
         return "", err
@@ -70,7 +71,7 @@ func GetLog(FromBlock int64, ToBlock int64, Addresses []string ) ( string,error)
         fmt.Println(vLog.BlockNumber)     // 2394201
         fmt.Println(vLog.TxHash.Hex())    // 0x280201eda63c9ff6f305fcee51d5eb86167fab40ca3108ec784e8652a0e2b1a6
 
-        event := new(contracts.ContractsEventRegisterAccETH)
+        event := new(ContractsEventRegisterAccETH)
         if err := contractAbi.Unpack(event, "event_registerAccETH", vLog.Data); err != nil {
           log.Fatal(err)
           return "", err
@@ -86,4 +87,11 @@ func GetLog(FromBlock int64, ToBlock int64, Addresses []string ) ( string,error)
         fmt.Println(topics[0]) // 0xe79e73da417710ae99aa2088575580a60415d359acfad9cdd3382d59c80281d4
       }
       return "",nil
+}
+
+
+func  ContractInstance(address string , backend bind.ContractBackend) (*Contracts, error) {
+     fmt.Println("Load contract instance from address: ", address)
+     addr := common.HexToAddress(address)
+     return NewContracts(addr, backend)
 }

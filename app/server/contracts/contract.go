@@ -48,11 +48,6 @@ func Init() {
     LContract = &Contract{}
 }
 
-func (fw *Contract) ContractInstance(address string , backend bind.ContractBackend) (*Contracts, error) {
-     fmt.Println("Load contract instance from address: ", address)
-     addr := common.HexToAddress(address)
-     return NewContracts(addr, backend)
-}
 
 func (fw *Contract) Deploy() (string,string, error) {
       wallet := account.Pool.GetWallet(fw.Owner)
@@ -75,13 +70,13 @@ func (fw *Contract) Deploy() (string,string, error) {
       auth.GasLimit = gasLimit
 
       // parsed, err := abi.JSON(strings.NewReader(fw.Content.Contract))
-      parsed, err := abi.JSON(strings.NewReader(ContractsABI))
+      parsed, err := abi.JSON(strings.NewReader(fw.Content.ContractABI))
       if err != nil {
          fmt.Println("Cannot parse contract ABI", err)
          return "","",err
       }
       // bytecode := common.FromHex(strings.TrimRight(fw.Content.ContractBIN, "\r\n"))
-      bytecode := common.FromHex(ContractsBin)
+      bytecode := common.FromHex(fw.Content.ContractBIN)
       fmt.Println("Bytecode:",bytecode)
       // bytecode := []byte(fw.Content.ContractBIN)
 

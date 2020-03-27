@@ -1,0 +1,1181 @@
+{
+	"info": {
+		"_postman_id": "a30aa03d-d4e0-497d-8b16-1c0fa3ffce33",
+		"name": "Loyalty",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "1. Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\":\"binhnt\",\n\t\"password\":\"123456\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "0. LoadJwt",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"filepath\":\"../config/jwt_account.yml\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/auth/loadjwt",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"auth",
+								"loadjwt"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Network",
+					"item": [
+						{
+							"name": "Add Peers",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "846294ba-8e2c-4ff7-b5a9-7cd5ca1e544a",
+										"exec": [
+											"pm.environment.get(\"variable_key\");"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"warning": "Value contains invalid newline characters.",
+										"key": "Cookie",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIwODc1MH0.INWtdrQAkxT2AbeDumBHTXpwv8Q6XvyB9y2t7TJYV3Vhwsw0C6KkSV7L5I2V3WTNb4J7QC7AV93f2xd3P_qZwg",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/api/admin/network/addpeers",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"network",
+										"addpeers"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Account",
+					"item": [
+						{
+							"name": "Load Keystore",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cookie",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTE1MTU5M30.lwBdSvyXQE6M3D-waCEEYUqGbS56B-nzgyEX1TMf_h_lRQfqQPYqsO9TQAfdvUjEJb4qL8pB5Txy-dFOxF-uiQ",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"filepath\":\"../config/keystore\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/admin/account/keystore",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"account",
+										"keystore"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Load File",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"warning": "Value contains invalid newline characters.",
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIwODc1MH0.INWtdrQAkxT2AbeDumBHTXpwv8Q6XvyB9y2t7TJYV3Vhwsw0C6KkSV7L5I2V3WTNb4J7QC7AV93f2xd3P_qZwg"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"filepath\":\"../config/account.yml\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/admin/account/loadfile",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"account",
+										"loadfile"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Tokens",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Cookie",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIwODc1MH0.INWtdrQAkxT2AbeDumBHTXpwv8Q6XvyB9y2t7TJYV3Vhwsw0C6KkSV7L5I2V3WTNb4J7QC7AV93f2xd3P_qZwg",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/api/admin/account/tokens",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"account",
+										"tokens"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SaveFile",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cookie",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTE1MTU5M30.lwBdSvyXQE6M3D-waCEEYUqGbS56B-nzgyEX1TMf_h_lRQfqQPYqsO9TQAfdvUjEJb4qL8pB5Txy-dFOxF-uiQ",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"filepath\":\"../config/account.yml\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/admin/account/savefile",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"account",
+										"savefile"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Wallet",
+					"item": [
+						{
+							"name": "Load",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIwODc1MH0.INWtdrQAkxT2AbeDumBHTXpwv8Q6XvyB9y2t7TJYV3Vhwsw0C6KkSV7L5I2V3WTNb4J7QC7AV93f2xd3P_qZwg"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"filepath\":\"../config/keystore\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/admin/wallet/load",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"wallet",
+										"load"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIwODc1MH0.INWtdrQAkxT2AbeDumBHTXpwv8Q6XvyB9y2t7TJYV3Vhwsw0C6KkSV7L5I2V3WTNb4J7QC7AV93f2xd3P_qZwg"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"filepath\":\"../config/keystore\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/admin/wallet/list",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"wallet",
+										"list"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "New",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTE1MTU5M30.lwBdSvyXQE6M3D-waCEEYUqGbS56B-nzgyEX1TMf_h_lRQfqQPYqsO9TQAfdvUjEJb4qL8pB5Txy-dFOxF-uiQ"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"filepath\":\"../config/keystore\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/admin/wallet/new",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"wallet",
+										"new"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Save",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTE1MTU5M30.lwBdSvyXQE6M3D-waCEEYUqGbS56B-nzgyEX1TMf_h_lRQfqQPYqsO9TQAfdvUjEJb4qL8pB5Txy-dFOxF-uiQ"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/admin/wallet/save",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"wallet",
+										"save"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "FillGas",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIwODc1MH0.INWtdrQAkxT2AbeDumBHTXpwv8Q6XvyB9y2t7TJYV3Vhwsw0C6KkSV7L5I2V3WTNb4J7QC7AV93f2xd3P_qZwg"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/admin/wallet/fillgas",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"wallet",
+										"fillgas"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Balance",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIwODc1MH0.INWtdrQAkxT2AbeDumBHTXpwv8Q6XvyB9y2t7TJYV3Vhwsw0C6KkSV7L5I2V3WTNb4J7QC7AV93f2xd3P_qZwg"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/admin/wallet/balance/ffbcd481c1330e180879b4d2b9b50642eea43c02",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"wallet",
+										"balance",
+										"ffbcd481c1330e180879b4d2b9b50642eea43c02"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Contract",
+					"item": [
+						{
+							"name": "Load",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIzMDgzNn0.fFEb9AbduS-TXXz9yERdBMT6IWa84DLwVjcygPCGAp9tO12ZWJOt6XC3yMDaIq4AoYUf2H0IUozMZ_LC95JscA"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"filepath\":\"../config/contract.yml\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/admin/contract/load",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"contract",
+										"load"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Save",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIzMDgzNn0.fFEb9AbduS-TXXz9yERdBMT6IWa84DLwVjcygPCGAp9tO12ZWJOt6XC3yMDaIq4AoYUf2H0IUozMZ_LC95JscA"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"filepath\":\"../config/contract.yml\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/admin/contract/save",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"contract",
+										"save"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Deploy",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIzMDgzNn0.fFEb9AbduS-TXXz9yERdBMT6IWa84DLwVjcygPCGAp9tO12ZWJOt6XC3yMDaIq4AoYUf2H0IUozMZ_LC95JscA"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"filepath\":\"../config/contract.yml\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/admin/contract/deploy",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"contract",
+										"deploy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CodeAt",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIzMDgzNn0.fFEb9AbduS-TXXz9yERdBMT6IWa84DLwVjcygPCGAp9tO12ZWJOt6XC3yMDaIq4AoYUf2H0IUozMZ_LC95JscA"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"filepath\":\"../config/contract.yml\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/admin/contract/code",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"contract",
+										"code"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "View",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIzMDgzNn0.fFEb9AbduS-TXXz9yERdBMT6IWa84DLwVjcygPCGAp9tO12ZWJOt6XC3yMDaIq4AoYUf2H0IUozMZ_LC95JscA"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"filepath\":\"../config/contract.yml\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/admin/contract/view",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"contract",
+										"view"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Transaction",
+					"item": [
+						{
+							"name": "Transaction",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "846294ba-8e2c-4ff7-b5a9-7cd5ca1e544a",
+										"exec": [
+											"pm.environment.get(\"variable_key\");"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIwODc1MH0.INWtdrQAkxT2AbeDumBHTXpwv8Q6XvyB9y2t7TJYV3Vhwsw0C6KkSV7L5I2V3WTNb4J7QC7AV93f2xd3P_qZwg",
+										"warning": "Value contains invalid newline characters."
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/api/admin/transaction/e983d582371cbea5fb824d70d54179f6566e89a16d5d8cd851163cbb3a569b03",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"admin",
+										"transaction",
+										"e983d582371cbea5fb824d70d54179f6566e89a16d5d8cd851163cbb3a569b03"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "log",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "846294ba-8e2c-4ff7-b5a9-7cd5ca1e544a",
+								"exec": [
+									"pm.environment.get(\"variable_key\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Cookie",
+								"type": "text",
+								"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIwODc1MH0.INWtdrQAkxT2AbeDumBHTXpwv8Q6XvyB9y2t7TJYV3Vhwsw0C6KkSV7L5I2V3WTNb4J7QC7AV93f2xd3P_qZwg",
+								"warning": "Value contains invalid newline characters."
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"FromBlock\": 0,\n\t\"ToBlock\": 1000,\n\t\"Addresses\": [\"0x495303d2FaCEaFa41B20aAab3f6AeCcf797D7528\"]\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/admin/log",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"admin",
+								"log"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Queue",
+			"item": [
+				{
+					"name": "Task",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Cookie",
+								"type": "text",
+								"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIzMDgzNn0.fFEb9AbduS-TXXz9yERdBMT6IWa84DLwVjcygPCGAp9tO12ZWJOt6XC3yMDaIq4AoYUf2H0IUozMZ_LC95JscA"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"method\":\"Credit\",\n\t\"arguments\": {\n\t\t\"From\": \"binhnt\",\n\t\t\"To\": \"duhd\",\n\t\t\"Amount\": 1000\n\t}\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/queue/task",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"queue",
+								"task"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "State",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Cookie",
+								"type": "text",
+								"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIzMDgzNn0.fFEb9AbduS-TXXz9yERdBMT6IWa84DLwVjcygPCGAp9tO12ZWJOt6XC3yMDaIq4AoYUf2H0IUozMZ_LC95JscA"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/queue/status/GMWJGSAPGATLMODYLUMGUQDIWWMNPPQI",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"queue",
+								"status",
+								"GMWJGSAPGATLMODYLUMGUQDIWWMNPPQI"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "V1",
+			"item": [],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Test",
+			"item": [
+				{
+					"name": "Stash",
+					"item": [
+						{
+							"name": "RegisterEth",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIzMDgzNn0.fFEb9AbduS-TXXz9yERdBMT6IWa84DLwVjcygPCGAp9tO12ZWJOt6XC3yMDaIq4AoYUf2H0IUozMZ_LC95JscA"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"method\":\"Credit\",\n\t\"arguments\": {\n\t\t\"From\": \"binhnt\",\n\t\t\"To\": \"duhd\",\n\t\t\"Amount\": 1000\n\t}\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/test/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"test",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Stash",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIzMDgzNn0.fFEb9AbduS-TXXz9yERdBMT6IWa84DLwVjcygPCGAp9tO12ZWJOt6XC3yMDaIq4AoYUf2H0IUozMZ_LC95JscA"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\":\"wallet4\",\n\t\"type\": 1\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/test/stash/create",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"test",
+										"stash",
+										"create"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Set State",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIzMDgzNn0.fFEb9AbduS-TXXz9yERdBMT6IWa84DLwVjcygPCGAp9tO12ZWJOt6XC3yMDaIq4AoYUf2H0IUozMZ_LC95JscA"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"name\":\"wallet1\",\n\t\"type\": 1\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/test/stash/state",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"test",
+										"stash",
+										"state"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Debit",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIzMDgzNn0.fFEb9AbduS-TXXz9yERdBMT6IWa84DLwVjcygPCGAp9tO12ZWJOt6XC3yMDaIq4AoYUf2H0IUozMZ_LC95JscA"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\t\n\t\"txRef\": \"1\" ,\n\t\"name\":\"wallet4\",\n\t\"amount\": 100000\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/test/stash/debit",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"test",
+										"stash",
+										"debit"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Credit",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIzMDgzNn0.fFEb9AbduS-TXXz9yERdBMT6IWa84DLwVjcygPCGAp9tO12ZWJOt6XC3yMDaIq4AoYUf2H0IUozMZ_LC95JscA"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"txRef\": \"1\" ,\n\t\"name\":\"wallet1\",\n\t\"amount\": 1\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/test/stash/credit",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"test",
+										"stash",
+										"credit"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Transfer",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIzMDgzNn0.fFEb9AbduS-TXXz9yERdBMT6IWa84DLwVjcygPCGAp9tO12ZWJOt6XC3yMDaIq4AoYUf2H0IUozMZ_LC95JscA"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"txRef\": \"1\",\n\t\"sender\":\"wallet1\",\n\t\"receiver\": \"wallet2\",\n\t\"amount\": 100,\n\t\"note\": \"Test transfer\",\n\t\"txType\": 1\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/test/stash/transfer",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"test",
+										"stash",
+										"transfer"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIzMDgzNn0.fFEb9AbduS-TXXz9yERdBMT6IWa84DLwVjcygPCGAp9tO12ZWJOt6XC3yMDaIq4AoYUf2H0IUozMZ_LC95JscA"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"txRef\": \"1\",\n\t\"sender\":\"wallet1\",\n\t\"receiver\": \"wallet2\",\n\t\"amount\": 100,\n\t\"note\": \"Test transfer\",\n\t\"txType\": 1\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/test/stash",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"test",
+										"stash"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Balance",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIzMDgzNn0.fFEb9AbduS-TXXz9yERdBMT6IWa84DLwVjcygPCGAp9tO12ZWJOt6XC3yMDaIq4AoYUf2H0IUozMZ_LC95JscA"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"txRef\": \"1\",\n\t\"sender\":\"wallet1\",\n\t\"receiver\": \"wallet2\",\n\t\"amount\": 100,\n\t\"note\": \"Test transfer\",\n\t\"txType\": 1\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/test/stash/wallet4/balance",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"test",
+										"stash",
+										"wallet4",
+										"balance"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "History",
+					"item": [
+						{
+							"name": "Credit",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIzMDgzNn0.fFEb9AbduS-TXXz9yERdBMT6IWa84DLwVjcygPCGAp9tO12ZWJOt6XC3yMDaIq4AoYUf2H0IUozMZ_LC95JscA"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"txRef\": \"1\",\n\t\"sender\":\"wallet1\",\n\t\"receiver\": \"wallet2\",\n\t\"amount\": 100,\n\t\"note\": \"Test transfer\",\n\t\"txType\": 1\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/test/history/credit",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"test",
+										"history",
+										"credit"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Debit",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIzMDgzNn0.fFEb9AbduS-TXXz9yERdBMT6IWa84DLwVjcygPCGAp9tO12ZWJOt6XC3yMDaIq4AoYUf2H0IUozMZ_LC95JscA"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"txRef\": \"1\",\n\t\"sender\":\"wallet1\",\n\t\"receiver\": \"wallet2\",\n\t\"amount\": 100,\n\t\"note\": \"Test transfer\",\n\t\"txType\": 1\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/test/history/debit",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"test",
+										"history",
+										"debit"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Transfer",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Cookie",
+										"type": "text",
+										"value": "fasthttp_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlltbHVhRzUwIiwicGFzc3dvcmQiOiJNVEl6TkRVMiIsImV4cCI6MTU4NTIzMDgzNn0.fFEb9AbduS-TXXz9yERdBMT6IWa84DLwVjcygPCGAp9tO12ZWJOt6XC3yMDaIq4AoYUf2H0IUozMZ_LC95JscA"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"txRef\": \"1\",\n\t\"sender\":\"wallet1\",\n\t\"receiver\": \"wallet2\",\n\t\"amount\": 100,\n\t\"note\": \"Test transfer\",\n\t\"txType\": 1\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/api/test/history/transfer",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"test",
+										"history",
+										"transfer"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

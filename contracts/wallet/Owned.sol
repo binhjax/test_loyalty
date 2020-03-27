@@ -4,7 +4,7 @@
     @date: 09/04/2019
 */
 
-pragma solidity ^0.6.4;
+pragma solidity ^0.5.7;
 
 contract Owned {
     address owner;

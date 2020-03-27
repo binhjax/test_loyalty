@@ -1,4 +1,5 @@
 package contracts
+
 import (
   // "time"
   "math/big"
@@ -23,11 +24,11 @@ import (
   "github.com/binhnt-teko/test_loyalty/app/server/helper"
 )
 
-func  (fw *Contract) CreditHistory() []string {
+func  CreditHistory() []string {
   retry := 0
   for retry < 3 {
     conn := connection.Pool.GetConnection()
-    ret, err := fw.creditHistory(conn)
+    ret, err := creditHistory(conn)
     if err == nil {
        return ret
     }
@@ -41,11 +42,11 @@ func  (fw *Contract) CreditHistory() []string {
   return []string{}
 }
 
-func  (fw *Contract) DebitHistory() []string {
+func  DebitHistory() []string {
   retry := 0
   for retry < 3 {
     conn := connection.Pool.GetConnection()
-    ret, err := fw.debitHistory(conn)
+    ret, err := debitHistory(conn)
     if err == nil {
        return ret
     }
@@ -59,11 +60,11 @@ func  (fw *Contract) DebitHistory() []string {
   return []string{}
 }
 
-func  (fw *Contract) TransferHistory() []string {
+func  TransferHistory() []string {
   retry := 0
   for retry < 3 {
     conn := connection.Pool.GetConnection()
-    ret, err := fw.transferHistory(conn)
+    ret, err := transferHistory(conn)
     if err == nil {
        return ret
     }
@@ -77,11 +78,11 @@ func  (fw *Contract) TransferHistory() []string {
   return []string{}
 }
 
-func  (fw *Contract) StashNames() []string {
+func  StashNames() []string {
   retry := 0
   for retry < 3 {
     conn := connection.Pool.GetConnection()
-    ret, err := fw.stashNames(conn)
+    ret, err := stashNames(conn)
     if err == nil {
        return ret
     }
@@ -95,11 +96,11 @@ func  (fw *Contract) StashNames() []string {
   return []string{}
 }
 
-func  (fw *Contract)  GetSummary() (int16,*big.Int, *big.Int, *big.Int,*big.Int)   {
+func   GetSummary() (int16,*big.Int, *big.Int, *big.Int,*big.Int)   {
   retry := 0
   for retry < 3 {
     conn := connection.Pool.GetConnection()
-    n_account, n_wallet, n_credit, n_debit, n_transfer, err := fw.getSummary(conn)
+    n_account, n_wallet, n_credit, n_debit, n_transfer, err := getSummary(conn)
     if err == nil {
        return n_account, n_wallet, n_credit, n_debit, n_transfer
     }
@@ -113,11 +114,11 @@ func  (fw *Contract)  GetSummary() (int16,*big.Int, *big.Int, *big.Int,*big.Int)
   return 0,nil,nil,nil,nil
 }
 
-func (fw *Contract) GetBalance(stashName string) (*big.Int, error)  {
+func GetBalance(stashName string) (*big.Int, error)  {
   retry := 0
   for retry < 3 {
     conn := connection.Pool.GetConnection()
-    bal, err := fw.getBalance(conn,stashName)
+    bal, err := getBalance(conn,stashName)
     fmt.Println("Get Balance: ", bal)
     if err == nil {
        return bal,nil
@@ -132,11 +133,11 @@ func (fw *Contract) GetBalance(stashName string) (*big.Int, error)  {
   return nil,errors.New("Connection errors")
 }
 
-func (fw *Contract) GetState(stashName string) (int8, error)  {
+func GetState(stashName string) (int8, error)  {
   retry := 0
   for retry < 3 {
     conn := connection.Pool.GetConnection()
-    bal, err := fw.getState(conn,stashName)
+    bal, err := getState(conn,stashName)
     if err == nil {
        return bal,nil
     }
@@ -150,11 +151,11 @@ func (fw *Contract) GetState(stashName string) (int8, error)  {
   return 0,errors.New("Connection errors")
 }
 
-func (fw *Contract) GetTransferHistoryLength() (*big.Int, error)  {
+func GetTransferHistoryLength() (*big.Int, error)  {
   retry := 0
   for retry < 3 {
     conn := connection.Pool.GetConnection()
-    n, err := fw.getTransferHistoryLength(conn)
+    n, err := getTransferHistoryLength(conn)
     if err == nil {
        return n,nil
     }
@@ -169,12 +170,12 @@ func (fw *Contract) GetTransferHistoryLength() (*big.Int, error)  {
 }
 
 /**************/
-func (fw *Contract)  creditHistory(conn *connection.RpcConnection) ([]string, error) {
+func  creditHistory(conn *connection.RpcConnection) ([]string, error) {
   // cfg := config.Configuration
 
   ret := []string{}
-  instance, err := fw.ContractInstance(fw.Address,conn.Client)
-  owner := common.HexToAddress("0x"+ fw.Owner)
+  instance, err := ContractInstance(LContract.Address,conn.Client)
+  owner := common.HexToAddress("0x"+ LContract.Owner)
 
   n_credit, err := instance.GetCreditHistoryLength(&bind.CallOpts{From: owner})
   if err != nil {
@@ -206,12 +207,12 @@ func (fw *Contract)  creditHistory(conn *connection.RpcConnection) ([]string, er
   return ret, nil
 }
 
-func  (fw *Contract) debitHistory(conn *connection.RpcConnection) ([]string,error) {
+func  debitHistory(conn *connection.RpcConnection) ([]string,error) {
   // cfg := config.Configuration
   ret := []string{}
-  instance, err := fw.ContractInstance(fw.Address,conn.Client)
+  instance, err := ContractInstance(LContract.Address,conn.Client)
 
-  owner := common.HexToAddress("0x"+ fw.Owner)
+  owner := common.HexToAddress("0x"+ LContract.Owner)
   n_debit, err := instance.GetDebitHistoryLength(&bind.CallOpts{From: owner})
   if err != nil {
     fmt.Println("Cannot Get length of wallets, error: ",err)
@@ -242,13 +243,13 @@ func  (fw *Contract) debitHistory(conn *connection.RpcConnection) ([]string,erro
   return ret,nil
 }
 
-func  (fw *Contract) transferHistory(conn *connection.RpcConnection) ([]string,error) {
+func  transferHistory(conn *connection.RpcConnection) ([]string,error) {
   // cfg := config.Configuration
   ret := []string{}
 
-  instance, err := fw.ContractInstance(fw.Address,conn.Client)
+  instance, err := ContractInstance(LContract.Address,conn.Client)
 
-  owner := common.HexToAddress("0x"+ fw.Owner)
+  owner := common.HexToAddress("0x"+ LContract.Owner)
   n_transfer, err := instance.GetTransferHistoryLength(&bind.CallOpts{From: owner})
   if err != nil {
     fmt.Println("Cannot Get length of wallets, error: ",err)
@@ -282,17 +283,17 @@ func  (fw *Contract) transferHistory(conn *connection.RpcConnection) ([]string,e
   return ret,nil
 }
 
-func  (fw *Contract) stashNames(conn *connection.RpcConnection) ([]string,error) {
+func  stashNames(conn *connection.RpcConnection) ([]string,error) {
   ret := []string{}
 
-  instance, err := fw.ContractInstance(fw.Address,conn.Client)
+  instance, err := ContractInstance(LContract.Address,conn.Client)
 
   if err != nil {
     fmt.Println("Cannot Get contract instance: ",err)
     return ret,err
   }
-  fmt.Println("Owner: ", fw.Owner)
-  owner := common.HexToAddress("0x"+ fw.Owner)
+  fmt.Println("Owner: ", LContract.Owner)
+  owner := common.HexToAddress("0x"+ LContract.Owner)
   n_wallet, err := instance.GetStashNamesLenght(&bind.CallOpts{From: owner})
   if err != nil {
     fmt.Println("Cannot Get length of wallets, error: ",err)
@@ -327,14 +328,14 @@ func  (fw *Contract) stashNames(conn *connection.RpcConnection) ([]string,error)
   return ret,nil
 }
 
-func  (fw *Contract) getSummary(conn *connection.RpcConnection) (int16,*big.Int, *big.Int, *big.Int,*big.Int, error)   {
-      instance, err := fw.ContractInstance(fw.Address,conn.Client)
+func  getSummary(conn *connection.RpcConnection) (int16,*big.Int, *big.Int, *big.Int,*big.Int, error)   {
+      instance, err := ContractInstance(LContract.Address,conn.Client)
 
-      owner := common.HexToAddress("0x"+ fw.Owner)
+      owner := common.HexToAddress("0x"+ LContract.Owner)
       n_account, err := instance.GetRegistedAccEthLength(&bind.CallOpts{From: owner})
 
       if err != nil {
-        fmt.Println("Cannot Get Registed Acc Eth Length error: ",err, ", Contract: ", fw.Address)
+        fmt.Println("Cannot Get Registed Acc Eth Length error: ",err, ", Contract: ", LContract.Address)
 
         return 0, nil, nil, nil, nil, err
       }
@@ -361,43 +362,43 @@ func  (fw *Contract) getSummary(conn *connection.RpcConnection) (int16,*big.Int,
       return  n_account, n_wallet, n_credit, n_debit, n_transfer,nil
 }
 
-func (fw *Contract) getBalance(conn *connection.RpcConnection, stashName string) (*big.Int, error)  {
+func getBalance(conn *connection.RpcConnection, stashName string) (*big.Int, error)  {
     fmt.Println("Contract.GetBalance: Start get balance ")
     conn.Mux.Lock()
     defer  conn.Mux.Unlock()
-    session,err  := fw.ContractInstance(fw.Address,conn.Client)
+    session,err  := ContractInstance(LContract.Address,conn.Client)
     if err != nil {
         fmt.Println("Cannot find F5 contract")
         return nil,err
     }
     fmt.Println("Contract.GetBalance: call  GetBalance")
 
-    owner := common.HexToAddress("0x"+ fw.Owner)
+    owner := common.HexToAddress("0x"+ LContract.Owner)
 
     return session.GetBalance(&bind.CallOpts{From: owner},helper.StringTo32Byte(stashName))
 }
 
-func (fw *Contract) getState(conn *connection.RpcConnection, stashName string) (int8, error)  {
+func getState(conn *connection.RpcConnection, stashName string) (int8, error)  {
   conn.Mux.Lock()
   defer  conn.Mux.Unlock()
 
-  session, err := fw.ContractInstance(fw.Address,conn.Client)
+  session, err := ContractInstance(LContract.Address,conn.Client)
   if err != nil {
       fmt.Println("Cannot find F5 contract")
       return 0,err
   }
-  owner := common.HexToAddress("0x"+ fw.Owner)
+  owner := common.HexToAddress("0x"+ LContract.Owner)
   return session.GetState(&bind.CallOpts{From: owner},helper.StringTo32Byte(stashName))
 }
 
-func (fw *Contract) getTransferHistoryLength(conn *connection.RpcConnection) (*big.Int, error)  {
+func getTransferHistoryLength(conn *connection.RpcConnection) (*big.Int, error)  {
   conn.Mux.Lock()
   defer  conn.Mux.Unlock()
-  session,err := fw.ContractInstance(fw.Address,conn.Client)
+  session,err := ContractInstance(LContract.Address,conn.Client)
   if err != nil {
       fmt.Println("Cannot find F5 contract")
       return nil,err
   }
-  owner := common.HexToAddress("0x"+ fw.Owner)
+  owner := common.HexToAddress("0x"+ LContract.Owner)
   return session.GetTransferHistoryLength(&bind.CallOpts{From:owner})
 }

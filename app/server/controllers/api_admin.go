@@ -1,7 +1,7 @@
 package controllers
 
 import (
-		"fmt"
+		// "fmt"
 		"github.com/qiangxue/fasthttp-routing"
 		// "github.com/valyala/fasthttp"
 	  "github.com/binhnt-teko/test_loyalty/app/server/admin"
@@ -9,8 +9,8 @@ import (
 		// "os"
 	  // "io/ioutil"
 		// "gopkg.in/yaml.v2"
-			"encoding/json"
-			"time"
+			// "encoding/json"
+			// "time"
 )
 
 type ApiAdmin struct {}
@@ -49,25 +49,4 @@ func (api ApiAdmin) GetTransactionByHash(c *routing.Context) error {
 		return Response(c,98,"get transation error ",err)
 	}
 	return Response(c,0,"Data", receipt)
-}
-
-// swagger:route POST /api/admin/log admin_viewlog logEndpoint
-// Get blockchain log
-// responses:
-//   200: commonResponse
-
-func (api ApiAdmin) GetLog(c *routing.Context) error {
-	// fmt.Println("Start getlog")
-	var filterLog = FilterLog{}
-	val := c.PostBody()
-	err := json.Unmarshal([]byte(val), &filterLog)
-	if err != nil {
-			fmt.Println(time.Now()," Cannot parse filterlog ", err)
-			return err
-	}
-  log, err := admin.GetLog(filterLog.FromBlock, filterLog.ToBlock, filterLog.Addresses )
-	if err != nil {
-		return Response(c,98,"get transation error ",err)
-	}
-	return Response(c,0,"Data", log)
 }

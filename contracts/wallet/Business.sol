@@ -3,6 +3,8 @@
     @version: 1.0
     @date: 09/04/2019
 */
+pragma solidity ^0.5.7;
+
 import "./Owned.sol";
 import "./Stash.sol";
 

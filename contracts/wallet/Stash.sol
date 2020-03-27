@@ -5,7 +5,7 @@
 
     To be deploy by Business, so that no human has owner access
 */
-pragma solidity ^0.6.4;
+pragma solidity ^0.5.7;
 
 import "./Owned.sol";
 

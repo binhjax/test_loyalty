@@ -22,9 +22,10 @@ import (
     "github.com/binhnt-teko/test_loyalty/app/server/helper"
     "github.com/binhnt-teko/test_loyalty/app/server/connection"
     "github.com/binhnt-teko/test_loyalty/app/server/account"
+   // "github.com/binhnt-teko/test_loyalty/app/server/admin"
 )
 
-func (fw *Contract) RegisterBatchEthToContract(requestTime int64) []string {
+func  RegisterBatchEthToContract(requestTime int64) []string {
     // cfg := config.Configuration
     ret := []string{}
     list := account.Pool.GetAccountList()
@@ -34,7 +35,7 @@ func (fw *Contract) RegisterBatchEthToContract(requestTime int64) []string {
       if i > 0 && i % 5 == 0 {
         if len(sublist) > 0 {
           fmt.Println("Start register sublist: ", i/5)
-          tx,err := fw.RegisterSubListAccETH(requestTime,sublist)
+          tx,err := RegisterSubListAccETH(requestTime,sublist)
           if err != nil {
              ret = append(ret, err.Error())
           } 	else {
@@ -47,7 +48,7 @@ func (fw *Contract) RegisterBatchEthToContract(requestTime int64) []string {
     }
     if len(sublist) > 0 {
       fmt.Println("Start register last sublist")
-      tx,err := fw.RegisterSubListAccETH(requestTime,sublist)
+      tx,err := RegisterSubListAccETH(requestTime,sublist)
       if err != nil {
          ret = append(ret, err.Error())
       } 	else {
@@ -57,10 +58,10 @@ func (fw *Contract) RegisterBatchEthToContract(requestTime int64) []string {
     return ret
 }
 
-func (fw *Contract) RegisterSubListAccETH(requestTime int64, listAcc []common.Address) (*types.Transaction, error) {
-    fmt.Println("Start RegisterAccETH, account: ", fw.Owner)
+func  RegisterSubListAccETH(requestTime int64, listAcc []common.Address) (*types.Transaction, error) {
+    fmt.Println("Start RegisterAccETH, account: ", LContract.Owner)
     cfg := config.Configuration
-    account := account.Pool.GetWallet(fw.Owner)
+    account := account.Pool.GetWallet(LContract.Owner)
     if account == nil {
        fmt.Println("Cannot find active account")
        return nil, errors.New("Cannot find bugdet account")
@@ -76,7 +77,7 @@ func (fw *Contract) RegisterSubListAccETH(requestTime int64, listAcc []common.Ad
     for retry < 3 {
       conn := connection.Pool.GetConnection()
       // conn := connection.Pool.GetConnectionByAccount(account.Address)
-      tx, err := fw.registerAccETH(conn,auth,listAcc)
+      tx, err := registerAccETH(conn,auth,listAcc)
       if err == nil {
          // redisCache.LogStart(tx.Hash().Hex(), 0, requestTime )
          return tx,nil
@@ -90,8 +91,8 @@ func (fw *Contract) RegisterSubListAccETH(requestTime int64, listAcc []common.Ad
     fmt.Println("End RegisterAccETH: retry failed ")
     return nil, errors.New("Cannot find wallet in pool to create transaction")
 }
-func (fw *Contract) registerAccETH(conn *connection.RpcConnection, auth *bind.TransactOpts, listAcc []common.Address) (*types.Transaction, error) {
-      session,err := fw.ContractInstance(fw.Address,conn.Client)
+func  registerAccETH(conn *connection.RpcConnection, auth *bind.TransactOpts, listAcc []common.Address) (*types.Transaction, error) {
+      session,err := ContractInstance(LContract.Address,conn.Client)
       if err != nil {
           fmt.Println("Cannot find F5 contract")
           return nil,err
@@ -103,7 +104,7 @@ func (fw *Contract) registerAccETH(conn *connection.RpcConnection, auth *bind.Tr
 }
 
 
-func (fw *Contract) CreateStash(requestTime int64, stashName string, typeStash int8) (*types.Transaction, error)  {
+func  CreateStash(requestTime int64, stashName string, typeStash int8) (*types.Transaction, error)  {
     cfg := config.Configuration
     retry := 0
     for retry <10 {
@@ -111,7 +112,7 @@ func (fw *Contract) CreateStash(requestTime int64, stashName string, typeStash i
         if account.IsAvailable() {
           conn := connection.Pool.GetConnection()
           // conn := connection.Pool.GetConnectionByAccount(account.Address)
-          session, err := fw.ContractInstance(fw.Address,conn.Client)
+          session, err := ContractInstance(LContract.Address,conn.Client)
           if err != nil {
               fmt.Println("Cannot find F5 contract")
               return nil,err
@@ -144,7 +145,7 @@ func (fw *Contract) CreateStash(requestTime int64, stashName string, typeStash i
     return nil, errors.New("Cannot find wallet in pool to create transaction")
 }
 
-func (fw *Contract) SetState(requestTime int64, stashName string, stashState int8 ) (*types.Transaction, error)  {
+func  SetState(requestTime int64, stashName string, stashState int8 ) (*types.Transaction, error)  {
   cfg := config.Configuration
   retry := 0
   for retry <10 {
@@ -158,7 +159,7 @@ func (fw *Contract) SetState(requestTime int64, stashName string, stashState int
           auth.GasLimit = gasLimit
           conn := connection.Pool.GetConnection()
           // conn := connection.Pool.GetConnectionByAccount(account.Address)
-          session, err  := fw.ContractInstance(fw.Address,conn.Client)
+          session, err  := ContractInstance(LContract.Address,conn.Client)
           if err != nil {
               fmt.Println("Cannot find F5 contract")
               return nil,err
@@ -180,7 +181,7 @@ func (fw *Contract) SetState(requestTime int64, stashName string, stashState int
   return nil, errors.New("Cannot find wallet in pool to create transaction")
 }
 
-func (fw *Contract) Debit(requestTime int64, txRef string, stashName string, amount *big.Int) (*types.Transaction, error) {
+func  Debit(requestTime int64, txRef string, stashName string, amount *big.Int) (*types.Transaction, error) {
     cfg := config.Configuration
     retry := 0
     for retry <10 {
@@ -194,7 +195,7 @@ func (fw *Contract) Debit(requestTime int64, txRef string, stashName string, amo
             auth.GasLimit = gasLimit
             conn := connection.Pool.GetConnection()
             // conn := connection.Pool.GetConnectionByAccount(account.Address)
-            session,err := fw.ContractInstance(fw.Address,conn.Client)
+            session,err := ContractInstance(LContract.Address,conn.Client)
             if err != nil {
                 fmt.Println("Cannot find F5 contract")
                 return nil,err
@@ -216,7 +217,7 @@ func (fw *Contract) Debit(requestTime int64, txRef string, stashName string, amo
     return nil, errors.New("Cannot find wallet in pool to create transaction")
 }
 
-func (fw *Contract) Credit(requestTime int64, txRef string, stashName string, amount *big.Int) (*types.Transaction, error) {
+func  Credit(requestTime int64, txRef string, stashName string, amount *big.Int) (*types.Transaction, error) {
   cfg := config.Configuration
   retry := 0
   for retry <10 {
@@ -230,7 +231,7 @@ func (fw *Contract) Credit(requestTime int64, txRef string, stashName string, am
           auth.GasLimit = gasLimit
           conn := connection.Pool.GetConnection()
           // conn := connection.Pool.GetConnectionByAccount(account.Address)
-          session,err := fw.ContractInstance(fw.Address,conn.Client)
+          session,err := ContractInstance(LContract.Address,conn.Client)
 
           if err != nil {
               fmt.Println("Cannot find F5 contract")
@@ -252,7 +253,7 @@ func (fw *Contract) Credit(requestTime int64, txRef string, stashName string, am
   return nil, errors.New("Cannot find wallet in pool to create transaction")
 }
 
-func (fw *Contract) Transfer(requestTime int64, txRef string, sender string, receiver string, amount *big.Int, note string, txType int8) (*types.Transaction, error) {
+func  Transfer(requestTime int64, txRef string, sender string, receiver string, amount *big.Int, note string, txType int8) (*types.Transaction, error) {
   cfg := config.Configuration
   retry := 0
   for retry <10 {
@@ -266,7 +267,7 @@ func (fw *Contract) Transfer(requestTime int64, txRef string, sender string, rec
           auth.GasLimit = gasLimit
           conn := connection.Pool.GetConnection()
           // conn := connection.Pool.GetConnectionByAccount(account.Address)
-          session,err := fw.ContractInstance(fw.Address,conn.Client)
+          session,err := ContractInstance(LContract.Address,conn.Client)
           if err != nil {
               fmt.Println("Cannot find F5 contract")
               return nil,err

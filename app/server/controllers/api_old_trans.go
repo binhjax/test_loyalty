@@ -23,7 +23,7 @@ func (api ApiTest) RegisterEth(c *routing.Context) error {
       return Response(c,99,"Contract is not loaded. Pls load ", nil)
   }
 	requestTime := time.Now().UnixNano()
-  txs := contracts.LContract.RegisterBatchEthToContract(requestTime);
+  txs := contracts.RegisterBatchEthToContract(requestTime);
   return Response(c,0,"Load transaction ", txs)
 }
 //2. Create stash
@@ -45,7 +45,7 @@ func (api ApiTest) CreateStash(c *routing.Context) error {
 	}
 
 	requestTime := time.Now().UnixNano()
-  tx, err := contracts.LContract.CreateStash(requestTime, stash.Name, stash.Type)
+  tx, err := contracts.CreateStash(requestTime, stash.Name, stash.Type)
 	if err != nil {
 			fmt.Println(time.Now()," Cannot create transaction  ", err)
 			return Response(c,99,"Cannot create transaction ",err)
@@ -66,7 +66,7 @@ func (api ApiTest) StashState(c *routing.Context) error {
 	}
 
 	requestTime := time.Now().UnixNano()
-  tx, err := contracts.LContract.SetState(requestTime, stash.Name, stash.Type)
+  tx, err := contracts.SetState(requestTime, stash.Name, stash.Type)
 	if err != nil {
 			fmt.Println(time.Now()," Cannot create transaction  ", err)
 			return Response(c,99,"Cannot create transaction ",err)
@@ -93,7 +93,7 @@ func (api ApiTest) StashDebit(c *routing.Context) error {
 	}
 
 	requestTime := time.Now().UnixNano()
-  tx, err := contracts.LContract.Debit(requestTime, stash.TxRef, stash.Name, big.NewInt(stash.Amount))
+  tx, err := contracts.Debit(requestTime, stash.TxRef, stash.Name, big.NewInt(stash.Amount))
 	if err != nil {
 			fmt.Println(time.Now()," Cannot create transaction  ", err)
 			return Response(c,99,"Cannot create transaction ",err)
@@ -114,7 +114,7 @@ func (api ApiTest) StashCredit(c *routing.Context) error {
 	}
 
 	requestTime := time.Now().UnixNano()
-  tx, err := contracts.LContract.Credit(requestTime, stash.TxRef, stash.Name, big.NewInt(stash.Amount))
+  tx, err := contracts.Credit(requestTime, stash.TxRef, stash.Name, big.NewInt(stash.Amount))
 	if err != nil {
 			fmt.Println(time.Now()," Cannot create transaction  ", err)
 			return Response(c,99,"Cannot create transaction ",err)
@@ -146,7 +146,7 @@ func (api ApiTest) StashTransfer(c *routing.Context) error {
 	}
 
 	requestTime := time.Now().UnixNano()
-  tx, err := contracts.LContract.Transfer(requestTime, stash.TxRef, stash.Sender,stash.Receiver, big.NewInt(stash.Amount), stash.Note, stash.TxType)
+  tx, err := contracts.Transfer(requestTime, stash.TxRef, stash.Sender,stash.Receiver, big.NewInt(stash.Amount), stash.Note, stash.TxType)
 	if err != nil {
 			fmt.Println(time.Now()," Cannot create transaction  ", err)
 			return Response(c,99,"Cannot create transaction ",err)

@@ -8,10 +8,10 @@ import (
   "github.com/binhnt-teko/test_loyalty/app/server/config"
 	"github.com/binhnt-teko/test_loyalty/app/server/router"
 	"github.com/binhnt-teko/test_loyalty/app/server/workers"
-	"github.com/binhnt-teko/test_loyalty/app/server/blocklisteners"
+	"github.com/binhnt-teko/test_loyalty/app/server/listener_block"
 	"github.com/binhnt-teko/test_loyalty/app/server/tasks"
   "github.com/binhnt-teko/test_loyalty/app/server/contracts"
-	 "github.com/binhnt-teko/test_loyalty/app/server/eventlog"
+	 "github.com/binhnt-teko/test_loyalty/app/server/listener_event"
 	"sync"
 )
 
